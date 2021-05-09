@@ -355,3 +355,9 @@ MigrationBackup/
 *.sln
 *.vcxproj*
 *.bak
+*.vcproj*
+*.dsw
+*.clw
+*.ico
+*.rc2
+
