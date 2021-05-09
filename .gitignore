@@ -354,3 +354,4 @@ MigrationBackup/
 *.dll
 *.sln
 *.vcxproj*
+*.bak
