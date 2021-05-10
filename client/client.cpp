@@ -1,16 +1,23 @@
 // client.cpp : Defines the class behaviors for the application.
 //
+extern "C"
+{
+#include <openssl/applink.c>
+};
 #include "dh.h"
-#include "des.h"
 #include "stdafx.h"
 #include "client.h"
 #include "clientDlg.h"
 #include "netlib/message.h"
-#include ".\client.h"
+#include "./client.h"
 #include "msgdispatcher.h"
 #include "DLGLOGON.h"
+#include "CRsa.h"
+#include "CDes.h"
+#include "CSecure.h"
+#include "tempvar.h"
+#define KEY_FILE "pubkey.pem"
 
-#include "RSAkeygen.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -88,34 +95,23 @@ BOOL CClientApp::InitInstance()
 	
 	//发送密钥协商，同学们自行定义
 	encon(a,p,g,sa);
-
-	RSA* p_Key = GetkeygenRSA();
-	int Keylen = RSA_size(p_Key);
-
-	char* pciphertext = new char[3 * Keylen];
 	
-		
-	RSA_Encrypt(MAX, p, pciphertext, p_Key);
-	RSA_Encrypt(MAX, g, pciphertext+ Keylen, p_Key);
-	RSA_Encrypt(MAX, sa, pciphertext + Keylen*2, p_Key);
+	NegKey = new CRsa;
+	NegKey->Init(KEY_FILE);
+	char data[MAX * 3];
+	memmove(data, p, MAX);
+	memmove(data+MAX, g, MAX);
+	memmove(data+MAX*2,sa, MAX);
 
 	int stat;
-	if(LOGON_FAIL == (stat=DoMsgSend_negotiate(MSG_MANAGE,MSG_KEY_NEGOTIATE, pciphertext, 3*512))){
+	if(LOGON_FAIL == (stat=DoMsgSend_negotiate(MSG_MANAGE,MSG_KEY_NEGOTIATE, data, MAX*3))){
 		AfxMessageBox("协商失败");
-		RSA_free(p_Key);
-		delete pciphertext;
 		return false;
 	}
 	else if (LOGON_TIMEOUT == stat) {
 		AfxMessageBox("协商超时");
-		RSA_free(p_Key);
-		delete pciphertext;
 		return false;
 	}
-	
-	RSA_free(p_Key);
-	delete pciphertext;
-	
 	CDLGLOGON dlglogon;
 	
 	int nResponse = dlglogon.DoModal();
@@ -140,5 +136,6 @@ int CClientApp::ExitInstance()
 {
 	// TODO: Add your specialized code here and/or call the base class
 	CoUninitialize();
+	delete Key;
 	return CWinApp::ExitInstance();
 }

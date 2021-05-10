@@ -1,10 +1,14 @@
-#include "des.h"
 #include "dh.h"
 #include "msgdispatcher.h"
 #include "database/database.h"
 #include "xml/xmlnodewrapper.h"
 
-#include "RSAkeygen.h"
+#include "CSecure.h"
+#include "CRsa.h"
+#include "CDes.h"
+#include "tempvar.h"
+#define KEY_FILE "prikey.pem"
+
 
 extern DWORD WINAPI msgdispatcher();
 
@@ -389,19 +393,17 @@ DWORD WINAPI msgdispatcher()
 #ifdef ENCRYPT
 		//bool is_negotialte = false;
 		int dlen = (int)pmsg->m_datalen;
-		char* plainText = new char[dlen];
+		char* plainText;
 		if(pmsg->m_subtype != MSG_KEY_NEGOTIALTE && pmsg->m_datalen){
-			DES_Decrypt(pmsg->data,dlen,bu,&plainText);
-			pmsg->m_datalen = dlen;
-			memset(pmsg->data,0,pmsg->m_datalen);
+			((CSecure*)Key)->Decrypt(dlen, pmsg->data, &plainText);
 			memmove(pmsg->data,plainText,pmsg->m_datalen);
-			delete plainText;
-		
+			delete[] plainText;
 		}
 #endif
 		
 		res_flg = 0;
 		reslen = 0;
+		CSecure* NegKey;
 		bool is_negotialte = false;
 		switch(pmsg->m_type)//根据消息类型进行控制分发
 		{
@@ -422,26 +424,19 @@ DWORD WINAPI msgdispatcher()
 					break;
 				case MSG_KEY_NEGOTIALTE:
 					//对协商过程进行处理，同学们自行处理
-					RSA* p_Key = GetkeygenRSA();
-					int Keylen = RSA_size(p_Key);
-					if (Keylen < MAX)
-						return false;
-					char* pplaintexttemp = new char[Keylen];
-					RSA_Decrypt(Keylen,pmsg->data,pplaintexttemp, p_Key);
-					memmove(p, pplaintexttemp, MAX);
-					memset(pplaintexttemp, 0, 512);
-					RSA_Decrypt(Keylen, (pmsg->data)+Keylen, pplaintexttemp, p_Key);
-					memmove(g, pplaintexttemp, MAX);
-					memset(pplaintexttemp, 0, 512);
-					RSA_Decrypt(Keylen, (pmsg->data)+ Keylen*2, pplaintexttemp, p_Key);
-					memmove(sa, pplaintexttemp, MAX);
-					memset(pplaintexttemp, 0, 512);
-
-					delete pplaintexttemp;
-					RSA_free(p_Key);
-
+					NegKey = new CRsa;
+					NegKey->Init(KEY_FILE);
+					char* pplain;
+					NegKey->Decrypt(pmsg->m_datalen, pmsg->data, &pplain);
+					memmove(p, pplain, MAX);
+					memmove(g, pplain+MAX, MAX);
+					memmove(sa, pplain+MAX*2, MAX);
 					recon(b, p, g, sb);
 					getkey(b,sa,p,g,bu);
+
+					Key = new CDes;
+					Key->Init(bu,MAX);
+
 					presdata = new char[MAX];
 					memmove(presdata,sb,MAX);
 					reslen = MAX;
@@ -465,41 +460,27 @@ DWORD WINAPI msgdispatcher()
 
 #ifdef ENCRYPT
 		if(is_negotialte == false){
-			if(res_head.m_datalen){
-				int count = res_head.m_datalen;
-				int icount = count;
-				if(0 != (count % 8))
-					icount = count+(8-(count%8));
-				pciphertext = new char[icount];
-				res_head.m_datalen = DES_Encrypt(pmsg->data,res_head.m_datalen,bu,pciphertext);
-				delete []presdata;
-				presdata = pciphertext;
-			}
-		
+			int lencipher = Key->Encrypt(res_head.m_datalen, pmsg->data, &pciphertext);
 		}
 #endif
-
-
+		if (is_negotialte == true) {
+			res_head.m_datalen = NegKey->Encrypt(MAX, presdata, &pciphertext);
+			delete NegKey;
+		}
 		int max_try =3;
 		
 		/*udp报文可能由于网络状况而丢失，max_try给定重试发送的次数*/
-		RSA* p_Key = GetkeygenRSA();
-		int Keylen = RSA_size(p_Key);
-		
-		char* pdatatemp = new char[Keylen];
-		RSA_Encrypt(MAX, sb, pdatatemp, p_Key);
 
-		res_head.m_datalen = Keylen;
 		while (max_try>0)
 		{
-			if (cfg.send(pdatatemp,&res_head,&pmsg->dst_addr,M_TYPE_RES) < 0)//发送响应
+			if (cfg.send(pciphertext,&res_head,&pmsg->dst_addr,M_TYPE_RES) < 0)//发送响应
 			{
 				max_try--;
 				continue;
 			}
 			break;
 		}
-		delete pdatatemp;
+		delete[] pciphertext;
 
 		if (max_try<=0)
 			res_flg = 0;

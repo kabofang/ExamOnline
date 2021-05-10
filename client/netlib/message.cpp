@@ -17,6 +17,8 @@
 #include <memory.h>
 #include <Winbase.h>
 #include <time.h>
+#include "../tempvar.h"
+#include "../CSecure.h"
 #pragma comment(lib,"ws2_32.lib")
 
 void del_buf(char **p)
@@ -84,7 +86,13 @@ int DoMsgSend_negotiate(int type,int subtype,char *pdata,int datalen)
 	dst_addr.sin_family=AF_INET;
 	dst_addr.sin_addr.S_un.S_addr = inet_addr((LPCTSTR)SERVER_IP);
 	dst_addr.sin_port=htons(atoi((char *)(LPCTSTR)SERVER_PORT));
-	return g_cfg.sendcmd(&head,pdata,(SOCKADDR *)&dst_addr);
+
+	char* pciphertext;
+	head.m_datalen = NegKey->Encrypt(datalen, pdata, &pciphertext);
+
+	return g_cfg.sendcmd(&head, pciphertext,(SOCKADDR *)&dst_addr);
+
+	delete[] pciphertext;
 	//加密
 }
 
@@ -106,20 +114,16 @@ int DoMsgSend(int type,int subtype,char *pdata,int datalen)
 #ifdef ENCRYPT
 
 	if (datalen) {
-		int count = datalen;
-		int icount = count;
-		if ((count % 8) != 0)
-			icount = count + (8 - (count % 8));
-		pciphertext = new char[icount];
-		head.m_datalen = DES_Encrypt(pdata, count, au, pciphertext);
+		head.m_datalen = Key->Encrypt(datalen, pdata, &pciphertext);
 	}
 
 
-
-	return g_cfg.sendcmd(&head, pciphertext, (SOCKADDR*)&dst_addr);
+	int ret= g_cfg.sendcmd(&head, pciphertext, (SOCKADDR*)&dst_addr);
 #else
-	return g_cfg.sendcmd(&head, pdata, (SOCKADDR*)&dst_addr);
+	int ret = g_cfg.sendcmd(&head, pdata, (SOCKADDR*)&dst_addr);
 #endif
+	delete[] pciphertext;
+	return ret;
 }
 
 //检查在生成Cmessage对象时，是否系统已经生成了，避免生成多个Cmessage对象

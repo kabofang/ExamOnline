@@ -1,11 +1,13 @@
-#include "des.h"
 #include "dh.h"
 #include "msgdispatcher.h"
-#include "RSAkeygen.h"
+#include "CSecure.h"
+#include "CDes.h"
+#include "tempvar.h"
 
 HWND CMSGDISPATCHER::h_dlgtest = NULL;
 extern char sa[MAX],sb[MAX],p[MAX],g[MAX],au[MAX];
 extern int a;
+
 //定义消息分发函数，实现对于接收到的任意消息的处理
 bool CMSGDISPATCHER::do_response(ULONG saddr,int subtype,char *pdata,int len)
 {
@@ -33,14 +35,15 @@ bool CMSGDISPATCHER::do_response(ULONG saddr,int subtype,char *pdata,int len)
 		break;
 	//处理密钥协商返回的响应，同学们自行完成
 	case MSG_KEY_NEGOTIATE:
-		RSA* p_Key = GetkeygenRSA();
-		int Keylen = RSA_size(p_Key);
-		if (Keylen < MAX)
-			return false;
-		char* pdatatemp = new char[Keylen];
-		RSA_Decrypt(Keylen, pdata, pdatatemp, p_Key);
-		memmove(sb, pdatatemp,MAX);
+		int Keylen = NegKey->GetKeylen();
+		char* pplain;
+		NegKey->Decrypt(Keylen, pdata, &pplain);
+		delete NegKey;
+		memmove(sb, pplain,MAX);
+		delete pplain;
 		getkey(a,sb,p,g,au);
+		Key = new CDes;
+		Key->Init(au, MAX);
 		break;
 	}
 	return rtnflg;
@@ -59,10 +62,7 @@ int msgdispatcher(void *pobj,MSGHEAD *phead,char *pdata,char **presdata)
 	char* plainText;
 	if (phead->m_subtype != MSG_KEY_NEGOTIATE && phead->m_datalen)
 	{
-		int dlen = phead->m_datalen;
-		DES_Decrypt(pdata,dlen ,au,&plainText);
-		phead->m_datalen = dlen;
-		memset(pdata, 0, phead->m_datalen);
+		Key->Decrypt(phead->m_datalen, pdata, &plainText);
 		memcpy(pdata, plainText, phead->m_datalen);
 		delete plainText;
 	}

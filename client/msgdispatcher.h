@@ -9,6 +9,5 @@ public:
 	static HWND h_dlgtest;//±£´æDialogTest´°¿Ú¾ä±ú
 	static bool do_response(ULONG saddr,int subtype,char *pdata,int len);
 };
-
 extern int msgdispatcher(void *pobj,MSGHEAD *phead,char *pdata,char **presdata);
 #endif

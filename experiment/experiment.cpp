@@ -1,13 +1,17 @@
 // experiment.cpp : 定义应用程序的类行为。
 //
-
+extern "C"
+{
+#include <openssl/applink.c>
+};
 #include "stdafx.h"
 #include "experiment.h"
 #include "experimentDlg.h"
 #include "./netlib/message.h"
 #include "msgdispatcher.h"
-#include ".\experiment.h"
+#include "./experiment.h"
 #include "./database/database.h"
+#include "tempvar.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -57,6 +61,7 @@ void exit_threads()//退出所有线程
 		if (!g_msglst.get_endflg())//等待接收端对end_flg复位
 			is_wait = false;
 	}
+
 }//
 CexperimentApp::CexperimentApp()
 {
@@ -118,6 +123,6 @@ int CexperimentApp::ExitInstance()
 	// TODO: Add your specialized code here and/or call the base class
 	CoUninitialize();
 	exit_threads();
-	
+	delete Key;
 	return CWinApp::ExitInstance();
 }
