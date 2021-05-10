@@ -6,11 +6,11 @@
 #include<openssl/pem.h>
 #include<openssl/rsa.h>
 bool CRsa::Char2Key(char* pkeychar,int len) {
-	CRITICAL_SECTION cs;
+
 	m_pKey = new RSA;
-	char temppath[512] = "tempprikey.pem";
-	//GetTempPathA(512, temppath);
-	//strcat(temppath, "tempprikey.pem");
+	char temppath[512];
+	GetTempPathA(512, temppath);
+	strcat(temppath, "tempkey.pem");
 	FILE*fp = fopen(temppath, "wb+");
 	if (!fp) {
 		return NULL;
@@ -35,7 +35,7 @@ bool CRsa::SetKeylen() {
 int CRsa::Encrypt(int lenplaintext, char* pplaintext, char** pciphertext) {
 	if (lenplaintext <= 0)
 		return 0;
-	int lenpaddingtext = ((lenplaintext-1) / m_Keylen + 1) * m_Keylen;
+	int lenpaddingtext = ((lenplaintext - 1) / m_Keylen + 1) * m_Keylen;
 	char* paddingtext = new char[lenpaddingtext];
 	*pciphertext = new char[lenpaddingtext];
 	memset(paddingtext, 0, lenpaddingtext);
@@ -56,13 +56,13 @@ int CRsa::Encrypt(int lenplaintext, char* pplaintext, char** pciphertext) {
 int CRsa::Decrypt(int lenciphertext, char* pciphertext, char** pplaintext) {
 	*pplaintext = new char[lenciphertext];
 	int lenplain = 0;
-	for(int i=0;i<lenciphertext;i+=m_Keylen)
+	for (int i = 0; i < lenciphertext; i += m_Keylen)
 #ifdef CLIENT
 		lenplain += RSA_public_decrypt(m_Keylen, (unsigned char*)(pciphertext + i), \
 			(unsigned char*)(*pplaintext + i), (RSA*)m_pKey, RSA_NO_PADDING);
 #else
-		lenplain += RSA_private_decrypt(m_Keylen, (unsigned char*)(pciphertext+i), \
-			(unsigned char*)(*pplaintext+i), (RSA*)m_pKey, RSA_NO_PADDING);
+		lenplain += RSA_private_decrypt(m_Keylen, (unsigned char*)(pciphertext + i), \
+			(unsigned char*)(*pplaintext + i), (RSA*)m_pKey, RSA_NO_PADDING);
 #endif
 	return lenplain;
 }

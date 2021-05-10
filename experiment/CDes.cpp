@@ -25,11 +25,11 @@ int CDes::Decrypt(int lenciphertext, char* pciphertext, char** pplaintext) {
 }
 
 bool CDes::Release() {
-	delete[] (char*)m_pKey;
+	delete[] m_pKey;
 	return true;
 }
 
-/*×Ö½Ú×ª»»³É¶þ½øÖÆ*/
+/*ï¿½Ö½ï¿½×ªï¿½ï¿½ï¿½É¶ï¿½ï¿½ï¿½ï¿½ï¿½*/
 int CDes::ByteToBit(ElemType ch, ElemType bit[8]) {
 	int cnt;
 	for (cnt = 0; cnt < 8; cnt++) {
@@ -38,7 +38,7 @@ int CDes::ByteToBit(ElemType ch, ElemType bit[8]) {
 	return 0;
 }
 
-/*¶þ½øÖÆ×ª»»³É×Ö½Ú*/
+/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½ï¿½ï¿½ï¿½Ö½ï¿½*/
 int CDes::BitToByte(ElemType bit[8], ElemType* ch) {
 	int cnt;
 	for (cnt = 0; cnt < 8; cnt++) {
@@ -47,7 +47,7 @@ int CDes::BitToByte(ElemType bit[8], ElemType* ch) {
 	return 0;
 }
 
-/*½«³¤¶ÈÎª8µÄ×Ö·û´®×ªÎª¶þ½øÖÆÎ»´®*/
+/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª8ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½×ªÎªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½*/
 int CDes::Char8ToBit64(ElemType ch[8], ElemType bit[64]) {
 	int cnt;
 	for (cnt = 0; cnt < 8; cnt++) {
@@ -56,7 +56,7 @@ int CDes::Char8ToBit64(ElemType ch[8], ElemType bit[64]) {
 	return 0;
 }
 
-/*½«¶þ½øÖÆÎ»´®×ªÎª³¤¶ÈÎª8µÄ×Ö·û´®*/
+/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½×ªÎªï¿½ï¿½ï¿½ï¿½Îª8ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½*/
 int CDes::Bit64ToChar8(ElemType bit[64], ElemType ch[8]) {
 	int cnt;
 	memset(ch, 0, 8);
@@ -66,19 +66,19 @@ int CDes::Bit64ToChar8(ElemType bit[64], ElemType ch[8]) {
 	return 0;
 }
 
-/*Éú³É×ÓÃÜÔ¿*/
+/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¿*/
 int CDes::DES_MakeSubKeys(ElemType key[64], ElemType subKeys[16][48]) {
 	ElemType temp[56];
 	int cnt;
-	DES_PC1_Transform(key, temp);/*PC1ÖÃ»»*/
-	for (cnt = 0; cnt < 16; cnt++) {/*16ÂÖµø´ú£¬²úÉú16¸ö×ÓÃÜÔ¿*/
-		DES_ROL(temp, MOVE_TIMES[cnt]);/*Ñ­»·×óÒÆ*/
-		DES_PC2_Transform(temp, subKeys[cnt]);/*PC2ÖÃ»»£¬²úÉú×ÓÃÜÔ¿*/
+	DES_PC1_Transform(key, temp);/*PC1ï¿½Ã»ï¿½*/
+	for (cnt = 0; cnt < 16; cnt++) {/*16ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½16ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¿*/
+		DES_ROL(temp, MOVE_TIMES[cnt]);/*Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
+		DES_PC2_Transform(temp, subKeys[cnt]);/*PC2ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¿*/
 	}
 	return 0;
 }
 
-/*ÃÜÔ¿ÖÃ»»1*/
+/*ï¿½ï¿½Ô¿ï¿½Ã»ï¿½1*/
 int CDes::DES_PC1_Transform(ElemType key[64], ElemType tempbts[56]) {
 	int cnt;
 	for (cnt = 0; cnt < 56; cnt++) {
@@ -87,7 +87,7 @@ int CDes::DES_PC1_Transform(ElemType key[64], ElemType tempbts[56]) {
 	return 0;
 }
 
-/*ÃÜÔ¿ÖÃ»»2*/
+/*ï¿½ï¿½Ô¿ï¿½Ã»ï¿½2*/
 int CDes::DES_PC2_Transform(ElemType key[56], ElemType tempbts[48]) {
 	int cnt;
 	for (cnt = 0; cnt < 48; cnt++) {
@@ -96,26 +96,26 @@ int CDes::DES_PC2_Transform(ElemType key[56], ElemType tempbts[48]) {
 	return 0;
 }
 
-/*Ñ­»·×óÒÆ*/
+/*Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
 int CDes::DES_ROL(ElemType data[56], int time) {
 	ElemType temp[56];
 
-	/*±£´æ½«ÒªÑ­»·ÒÆ¶¯µ½ÓÒ±ßµÄÎ»*/
+	/*ï¿½ï¿½ï¿½æ½«ÒªÑ­ï¿½ï¿½ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½Ò±ßµï¿½Î»*/
 	memcpy(temp, data, time);
 	memcpy(temp + time, data + 28, time);
 
-	/*Ç°28Î»ÒÆ¶¯*/
+	/*Ç°28Î»ï¿½Æ¶ï¿½*/
 	memcpy(data, data + time, 28 - time);
 	memcpy(data + 28 - time, temp, time);
 
-	/*ºó28Î»ÒÆ¶¯*/
+	/*ï¿½ï¿½28Î»ï¿½Æ¶ï¿½*/
 	memcpy(data + 28, data + 28 + time, 28 - time);
 	memcpy(data + 56 - time, temp + time, time);
 
 	return 0;
 }
 
-/*IPÖÃ»»*/
+/*IPï¿½Ã»ï¿½*/
 int CDes::DES_IP_Transform(ElemType data[64]) {
 	int cnt;
 	ElemType temp[64];
@@ -126,7 +126,7 @@ int CDes::DES_IP_Transform(ElemType data[64]) {
 	return 0;
 }
 
-/*IPÄæÖÃ»»*/
+/*IPï¿½ï¿½ï¿½Ã»ï¿½*/
 int CDes::DES_IP_1_Transform(ElemType data[64]) {
 	int cnt;
 	ElemType temp[64];
@@ -137,7 +137,7 @@ int CDes::DES_IP_1_Transform(ElemType data[64]) {
 	return 0;
 }
 
-/*À©Õ¹ÖÃ»»*/
+/*ï¿½ï¿½Õ¹ï¿½Ã»ï¿½*/
 int CDes::DES_E_Transform(ElemType data[48]) {
 	int cnt;
 	ElemType temp[48];
@@ -148,7 +148,7 @@ int CDes::DES_E_Transform(ElemType data[48]) {
 	return 0;
 }
 
-/*PÖÃ»»*/
+/*Pï¿½Ã»ï¿½*/
 int CDes::DES_P_Transform(ElemType data[32]) {
 	int cnt;
 	ElemType temp[32];
@@ -159,7 +159,7 @@ int CDes::DES_P_Transform(ElemType data[32]) {
 	return 0;
 }
 
-/*Òì»ò*/
+/*ï¿½ï¿½ï¿½*/
 int CDes::DES_XOR(ElemType R[48], ElemType L[48], int count) {
 	int cnt;
 	for (cnt = 0; cnt < count; cnt++) {
@@ -168,7 +168,7 @@ int CDes::DES_XOR(ElemType R[48], ElemType L[48], int count) {
 	return 0;
 }
 
-/*SºÐÖÃ»»*/
+/*Sï¿½ï¿½ï¿½Ã»ï¿½*/
 int CDes::DES_SBOX(ElemType data[48]) {
 	int cnt;
 	int line, row, output;
@@ -177,13 +177,13 @@ int CDes::DES_SBOX(ElemType data[48]) {
 		cur1 = cnt * 6;
 		cur2 = cnt << 2;
 
-		/*¼ÆËãÔÚSºÐÖÐµÄÐÐÓëÁÐ*/
+		/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Sï¿½ï¿½ï¿½Ðµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
 		line = (data[cur1] << 1) + data[cur1 + 5];
 		row = (data[cur1 + 1] << 3) + (data[cur1 + 2] << 2)
 			+ (data[cur1 + 3] << 1) + data[cur1 + 4];
 		output = S[cnt][line][row];
 
-		/*»¯Îª2½øÖÆ*/
+		/*ï¿½ï¿½Îª2ï¿½ï¿½ï¿½ï¿½*/
 		data[cur2] = (output & 0X08) >> 3;
 		data[cur2 + 1] = (output & 0X04) >> 2;
 		data[cur2 + 2] = (output & 0X02) >> 1;
@@ -192,7 +192,7 @@ int CDes::DES_SBOX(ElemType data[48]) {
 	return 0;
 }
 
-/*½»»»*/
+/*ï¿½ï¿½ï¿½ï¿½*/
 int CDes::DES_Swap(ElemType left[32], ElemType right[32]) {
 	ElemType temp[32];
 	memcpy(temp, left, 32);
@@ -201,75 +201,75 @@ int CDes::DES_Swap(ElemType left[32], ElemType right[32]) {
 	return 0;
 }
 
-/*¼ÓÃÜµ¥¸ö·Ö×é*/
+/*ï¿½ï¿½ï¿½Üµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
 int CDes::DES_EncryptBlock(ElemType plainBlock[8], ElemType subKeys[16][48], ElemType cipherBlock[8]) {
 	ElemType plainBits[64];
 	ElemType copyRight[48];
 	int cnt;
 
 	Char8ToBit64(plainBlock, plainBits);
-	/*³õÊ¼ÖÃ»»£¨IPÖÃ»»£©*/
+	/*ï¿½ï¿½Ê¼ï¿½Ã»ï¿½ï¿½ï¿½IPï¿½Ã»ï¿½ï¿½ï¿½*/
 	DES_IP_Transform(plainBits);
 
-	/*16ÂÖµü´ú*/
+	/*16ï¿½Öµï¿½ï¿½ï¿½*/
 	for (cnt = 0; cnt < 16; cnt++) {
 		memcpy(copyRight, plainBits + 32, 32);
-		/*½«ÓÒ°ë²¿·Ö½øÐÐÀ©Õ¹ÖÃ»»£¬´Ó32Î»À©Õ¹µ½48Î»*/
+		/*ï¿½ï¿½ï¿½Ò°ë²¿ï¿½Ö½ï¿½ï¿½ï¿½ï¿½ï¿½Õ¹ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½32Î»ï¿½ï¿½Õ¹ï¿½ï¿½48Î»*/
 		DES_E_Transform(copyRight);
-		/*½«ÓÒ°ë²¿·ÖÓë×ÓÃÜÔ¿½øÐÐÒì»ò²Ù×÷*/
+		/*ï¿½ï¿½ï¿½Ò°ë²¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
 		DES_XOR(copyRight, subKeys[cnt], 48);
-		/*Òì»ò½á¹û½øÈëSºÐ£¬Êä³ö32Î»½á¹û*/
+		/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Sï¿½Ð£ï¿½ï¿½ï¿½ï¿½32Î»ï¿½ï¿½ï¿½*/
 		DES_SBOX(copyRight);
-		/*PÖÃ»»*/
+		/*Pï¿½Ã»ï¿½*/
 		DES_P_Transform(copyRight);
-		/*½«Ã÷ÎÄ×ó°ë²¿·ÖÓëÓÒ°ë²¿·Ö½øÐÐÒì»ò*/
+		/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ë²¿ï¿½ï¿½ï¿½ï¿½ï¿½Ò°ë²¿ï¿½Ö½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
 		DES_XOR(plainBits, copyRight, 32);
 		if (cnt != 15) {
-			/*×îÖÕÍê³É×óÓÒ²¿µÄ½»»»*/
+			/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò²ï¿½ï¿½Ä½ï¿½ï¿½ï¿½*/
 			DES_Swap(plainBits, plainBits + 32);
 		}
 	}
-	/*Äæ³õÊ¼ÖÃ»»£¨IP^1ÖÃ»»£©*/
+	/*ï¿½ï¿½ï¿½Ê¼ï¿½Ã»ï¿½ï¿½ï¿½IP^1ï¿½Ã»ï¿½ï¿½ï¿½*/
 	DES_IP_1_Transform(plainBits);
 	Bit64ToChar8(plainBits, cipherBlock);
 	return 0;
 }
 
-/*½âÃÜµ¥¸ö·Ö×é*/
+/*ï¿½ï¿½ï¿½Üµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
 int CDes::DES_DecryptBlock(ElemType cipherBlock[8], ElemType subKeys[16][48], ElemType plainBlock[8]) {
 	ElemType cipherBits[64];
 	ElemType copyRight[48];
 	int cnt;
 
 	Char8ToBit64(cipherBlock, cipherBits);
-	/*³õÊ¼ÖÃ»»£¨IPÖÃ»»£©*/
+	/*ï¿½ï¿½Ê¼ï¿½Ã»ï¿½ï¿½ï¿½IPï¿½Ã»ï¿½ï¿½ï¿½*/
 	DES_IP_Transform(cipherBits);
 
-	/*16ÂÖµü´ú*/
+	/*16ï¿½Öµï¿½ï¿½ï¿½*/
 	for (cnt = 15; cnt >= 0; cnt--) {
 		memcpy(copyRight, cipherBits + 32, 32);
-		/*½«ÓÒ°ë²¿·Ö½øÐÐÀ©Õ¹ÖÃ»»£¬´Ó32Î»À©Õ¹µ½48Î»*/
+		/*ï¿½ï¿½ï¿½Ò°ë²¿ï¿½Ö½ï¿½ï¿½ï¿½ï¿½ï¿½Õ¹ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½32Î»ï¿½ï¿½Õ¹ï¿½ï¿½48Î»*/
 		DES_E_Transform(copyRight);
-		/*½«ÓÒ°ë²¿·ÖÓë×ÓÃÜÔ¿½øÐÐÒì»ò²Ù×÷*/
+		/*ï¿½ï¿½ï¿½Ò°ë²¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
 		DES_XOR(copyRight, subKeys[cnt], 48);
-		/*Òì»ò½á¹û½øÈëSºÐ£¬Êä³ö32Î»½á¹û*/
+		/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Sï¿½Ð£ï¿½ï¿½ï¿½ï¿½32Î»ï¿½ï¿½ï¿½*/
 		DES_SBOX(copyRight);
-		/*PÖÃ»»*/
+		/*Pï¿½Ã»ï¿½*/
 		DES_P_Transform(copyRight);
-		/*½«Ã÷ÎÄ×ó°ë²¿·ÖÓëÓÒ°ë²¿·Ö½øÐÐÒì»ò*/
+		/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ë²¿ï¿½ï¿½ï¿½ï¿½ï¿½Ò°ë²¿ï¿½Ö½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
 		DES_XOR(cipherBits, copyRight, 32);
 		if (cnt != 0) {
-			/*×îÖÕÍê³É×óÓÒ²¿µÄ½»»»*/
+			/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò²ï¿½ï¿½Ä½ï¿½ï¿½ï¿½*/
 			DES_Swap(cipherBits, cipherBits + 32);
 		}
 	}
-	/*Äæ³õÊ¼ÖÃ»»£¨IP^1ÖÃ»»£©*/
+	/*ï¿½ï¿½ï¿½Ê¼ï¿½Ã»ï¿½ï¿½ï¿½IP^1ï¿½Ã»ï¿½ï¿½ï¿½*/
 	DES_IP_1_Transform(cipherBits);
 	Bit64ToChar8(cipherBits, plainBlock);
 	return 0;
 }
 
-/*¼ÓÃÜÎÄ¼þ*/
+/*ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½*/
 int CDes::DES_Encrypt(char* plainText, int datalen, char* keyStr, char* cipherText) {
 	int count = datalen;
 	int icount = count;
@@ -279,17 +279,17 @@ int CDes::DES_Encrypt(char* plainText, int datalen, char* keyStr, char* cipherTe
 	ElemType bKey[64];
 	ElemType subKeys[16][48];
 
-	/*ÉèÖÃÃÜÔ¿*/
+	/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¿*/
 	memcpy(keyBlock, keyStr, 8);
-	/*½«ÃÜÔ¿×ª»»Îª¶þ½øÖÆÁ÷*/
+	/*ï¿½ï¿½ï¿½ï¿½Ô¿×ªï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
 	Char8ToBit64(keyBlock, bKey);
-	/*Éú³É×ÓÃÜÔ¿*/
+	/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¿*/
 	DES_MakeSubKeys(bKey, subKeys);
 
 	char* pdata = plainText;
 
 	while (count >= 8) {
-		/*Ã¿´Î¶Á8¸ö×Ö½Ú£¬²¢·µ»Ø³É¹¦¶ÁÈ¡µÄ×Ö½ÚÊý*/
+		/*Ã¿ï¿½Î¶ï¿½8ï¿½ï¿½ï¿½Ö½Ú£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø³É¹ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½Ö½ï¿½ï¿½ï¿½*/
 		memcpy(plainBlock, pdata, 8);
 		DES_EncryptBlock(plainBlock, subKeys, cipherBlock);
 		memcpy(cipherText, cipherBlock, 8);
@@ -298,10 +298,10 @@ int CDes::DES_Encrypt(char* plainText, int datalen, char* keyStr, char* cipherTe
 		count -= 8;
 	}
 	if (count) {
-		/*Ìî³ä*/
+		/*ï¿½ï¿½ï¿½*/
 		memcpy(plainBlock, pdata, count);
 		memset(plainBlock + count, '\0', 7 - count);
-		/*×îºóÒ»¸ö×Ö·û±£´æ°üÀ¨×îºóÒ»¸ö×Ö·ûÔÚÄÚµÄËùÌî³äµÄ×Ö·ûÊýÁ¿*/
+		/*ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½*/
 		plainBlock[7] = 8 - count;
 		DES_EncryptBlock(plainBlock, subKeys, cipherBlock);
 		memcpy(cipherText, cipherBlock, 8);
@@ -310,7 +310,7 @@ int CDes::DES_Encrypt(char* plainText, int datalen, char* keyStr, char* cipherTe
 	return icount;
 }
 
-/*¼ÓÃÜÎÄ¼þ*/
+/*ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½*/
 int CDes::DES_Encrypt_File(char* plainFile, char* keyStr, char* cipherFile) {
 	FILE* plain, * cipher;
 	int count;
@@ -323,24 +323,24 @@ int CDes::DES_Encrypt_File(char* plainFile, char* keyStr, char* cipherFile) {
 	if ((cipher = fopen(cipherFile, "wb")) == NULL) {
 		return CIPHER_FILE_OPEN_ERROR;
 	}
-	/*ÉèÖÃÃÜÔ¿*/
+	/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¿*/
 	memcpy(keyBlock, keyStr, 8);
-	/*½«ÃÜÔ¿×ª»»Îª¶þ½øÖÆÁ÷*/
+	/*ï¿½ï¿½ï¿½ï¿½Ô¿×ªï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
 	Char8ToBit64(keyBlock, bKey);
-	/*Éú³É×ÓÃÜÔ¿*/
+	/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¿*/
 	DES_MakeSubKeys(bKey, subKeys);
 
 	while (!feof(plain)) {
-		/*Ã¿´Î¶Á8¸ö×Ö½Ú£¬²¢·µ»Ø³É¹¦¶ÁÈ¡µÄ×Ö½ÚÊý*/
+		/*Ã¿ï¿½Î¶ï¿½8ï¿½ï¿½ï¿½Ö½Ú£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø³É¹ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½Ö½ï¿½ï¿½ï¿½*/
 		if ((count = fread(plainBlock, sizeof(char), 8, plain)) == 8) {
 			DES_EncryptBlock(plainBlock, subKeys, cipherBlock);
 			fwrite(cipherBlock, sizeof(char), 8, cipher);
 		}
 	}
 	if (count) {
-		/*Ìî³ä*/
+		/*ï¿½ï¿½ï¿½*/
 		memset(plainBlock + count, '\0', 7 - count);
-		/*×îºóÒ»¸ö×Ö·û±£´æ°üÀ¨×îºóÒ»¸ö×Ö·ûÔÚÄÚµÄËùÌî³äµÄ×Ö·ûÊýÁ¿*/
+		/*ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½*/
 		plainBlock[7] = 8 - count;
 		DES_EncryptBlock(plainBlock, subKeys, cipherBlock);
 		fwrite(cipherBlock, sizeof(char), 8, cipher);
@@ -350,7 +350,7 @@ int CDes::DES_Encrypt_File(char* plainFile, char* keyStr, char* cipherFile) {
 	return OK;
 }
 
-/*½âÃÜÎÄ¼þ*/
+/*ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½*/
 int CDes::DES_Decrypt(char* cipherText, int& cipherlen, char* keyStr, char** plainText) {
 	int count = 0;
 	int times = 0;
@@ -358,17 +358,17 @@ int CDes::DES_Decrypt(char* cipherText, int& cipherlen, char* keyStr, char** pla
 	ElemType bKey[64];
 	ElemType subKeys[16][48];
 
-	/*ÉèÖÃÃÜÔ¿*/
+	/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¿*/
 	memcpy(keyBlock, keyStr, 8);
-	/*½«ÃÜÔ¿×ª»»Îª¶þ½øÖÆÁ÷*/
+	/*ï¿½ï¿½ï¿½ï¿½Ô¿×ªï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
 	Char8ToBit64(keyBlock, bKey);
-	/*Éú³É×ÓÃÜÔ¿*/
+	/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¿*/
 	DES_MakeSubKeys(bKey, subKeys);
 	*plainText = new char[cipherlen + 1];
 	memset(*plainText, 0, cipherlen + 1);
 	char* pdata = *plainText;
 	while (1) {
-		/*ÃÜÎÄµÄ×Ö½ÚÊýÒ»¶¨ÊÇ8µÄÕûÊý±¶*/
+		/*ï¿½ï¿½ï¿½Äµï¿½ï¿½Ö½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½8ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
 		memcpy(cipherBlock, cipherText, 8);
 		DES_DecryptBlock(cipherBlock, subKeys, plainBlock);
 		times += 8;
@@ -381,7 +381,7 @@ int CDes::DES_Decrypt(char* cipherText, int& cipherlen, char* keyStr, char** pla
 			break;
 		}
 	}
-	/*ÅÐ¶ÏÄ©Î²ÊÇ·ñ±»Ìî³ä*/
+	/*ï¿½Ð¶ï¿½Ä©Î²ï¿½Ç·ï¿½ï¿½ï¿½ï¿½*/
 	if (plainBlock[7] < 8) {
 		for (count = 8 - plainBlock[7]; count < 7; count++) {
 			if (plainBlock[count] != '\0') {
@@ -389,18 +389,18 @@ int CDes::DES_Decrypt(char* cipherText, int& cipherlen, char* keyStr, char** pla
 			}
 		}
 	}
-	if (count == 7) {/*ÓÐÌî³ä*/
+	if (count == 7) {/*ï¿½ï¿½ï¿½ï¿½ï¿½*/
 		cipherlen -= plainBlock[7];
 		memcpy(pdata, plainBlock, 8 - plainBlock[7]);
 	}
-	else {/*ÎÞÌî³ä*/
+	else {/*ï¿½ï¿½ï¿½ï¿½ï¿½*/
 		memcpy(pdata, plainBlock, 8);
 	}
 
 	return OK;
 }
 
-/*½âÃÜÎÄ¼þ*/
+/*ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½*/
 int CDes::DES_Decrypt_File(char* cipherFile, char* keyStr, char* plainFile) {
 	FILE* plain, * cipher;
 	int count, times = 0;
@@ -415,19 +415,19 @@ int CDes::DES_Decrypt_File(char* cipherFile, char* keyStr, char* plainFile) {
 		return PLAIN_FILE_OPEN_ERROR;
 	}
 
-	/*ÉèÖÃÃÜÔ¿*/
+	/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¿*/
 	memcpy(keyBlock, keyStr, 8);
-	/*½«ÃÜÔ¿×ª»»Îª¶þ½øÖÆÁ÷*/
+	/*ï¿½ï¿½ï¿½ï¿½Ô¿×ªï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
 	Char8ToBit64(keyBlock, bKey);
-	/*Éú³É×ÓÃÜÔ¿*/
+	/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¿*/
 	DES_MakeSubKeys(bKey, subKeys);
 
-	/*È¡ÎÄ¼þ³¤¶È */
-	fseek(cipher, 0, SEEK_END);/*½«ÎÄ¼þÖ¸ÕëÖÃÎ²*/
-	fileLen = ftell(cipher); /*È¡ÎÄ¼þÖ¸Õëµ±Ç°Î»ÖÃ*/
-	rewind(cipher); /*½«ÎÄ¼þÖ¸ÕëÖØÖ¸ÏòÎÄ¼þÍ·*/
+	/*È¡ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ */
+	fseek(cipher, 0, SEEK_END);/*ï¿½ï¿½ï¿½Ä¼ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½Î²*/
+	fileLen = ftell(cipher); /*È¡ï¿½Ä¼ï¿½Ö¸ï¿½ëµ±Ç°Î»ï¿½ï¿½*/
+	rewind(cipher); /*ï¿½ï¿½ï¿½Ä¼ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½Ä¼ï¿½Í·*/
 	while (1) {
-		/*ÃÜÎÄµÄ×Ö½ÚÊýÒ»¶¨ÊÇ8µÄÕûÊý±¶*/
+		/*ï¿½ï¿½ï¿½Äµï¿½ï¿½Ö½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½8ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
 		fread(cipherBlock, sizeof(char), 8, cipher);
 		DES_DecryptBlock(cipherBlock, subKeys, plainBlock);
 		times += 8;
@@ -438,7 +438,7 @@ int CDes::DES_Decrypt_File(char* cipherFile, char* keyStr, char* plainFile) {
 			break;
 		}
 	}
-	/*ÅÐ¶ÏÄ©Î²ÊÇ·ñ±»Ìî³ä*/
+	/*ï¿½Ð¶ï¿½Ä©Î²ï¿½Ç·ï¿½ï¿½ï¿½ï¿½*/
 	if (plainBlock[7] < 8) {
 		for (count = 8 - plainBlock[7]; count < 7; count++) {
 			if (plainBlock[count] != '\0') {
@@ -446,10 +446,10 @@ int CDes::DES_Decrypt_File(char* cipherFile, char* keyStr, char* plainFile) {
 			}
 		}
 	}
-	if (count == 7) {/*ÓÐÌî³ä*/
+	if (count == 7) {/*ï¿½ï¿½ï¿½ï¿½ï¿½*/
 		fwrite(plainBlock, sizeof(char), 8 - plainBlock[7], plain);
 	}
-	else {/*ÎÞÌî³ä*/
+	else {/*ï¿½ï¿½ï¿½ï¿½ï¿½*/
 		fwrite(plainBlock, sizeof(char), 8, plain);
 	}
 

@@ -1,5 +1,6 @@
 #include "CSecure.h"
 #include <stdio.h>
+#define CLIENT
 bool CSecure::Init(char* FilePath) {
 	FILE*fp=fopen(FilePath, "rb");
 	if (!fp) {

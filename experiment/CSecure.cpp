@@ -1,6 +1,6 @@
 #include "CSecure.h"
 #include <stdio.h>
-#include <stdlib.h>
+#define SERVER
 
 bool CSecure::Init(char* FilePath) {
 	FILE*fp=fopen(FilePath, "rb");
@@ -40,4 +40,8 @@ CSecure::~CSecure() {
 }
 bool CSecure::Release() {
 	return true;
+}
+
+int CSecure::GetKeylen() {
+	return m_Keylen;
 }

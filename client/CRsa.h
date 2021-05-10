@@ -1,6 +1,6 @@
 #pragma once
 #include "CSecure.h"
-#define CLIENT
+
 class CRsa:public CSecure{
 private:
 	virtual bool Char2Key(char*,int);
