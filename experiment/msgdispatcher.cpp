@@ -389,8 +389,7 @@ DWORD WINAPI msgdispatcher()
 			continue;
 		}
 		
-		//处理解密，同学们自行处理
-#ifdef ENCRYPT
+#ifdef MSG_ENCRYPT
 		//bool is_negotialte = false;
 		int dlen = (int)pmsg->m_datalen;
 		char* plainText;
@@ -423,19 +422,29 @@ DWORD WINAPI msgdispatcher()
 					res_flg = score_test(pmsg->data,pmsg->m_datalen,&presdata,reslen,database);
 					break;
 				case MSG_KEY_NEGOTIALTE:
-					//对协商过程进行处理，同学们自行处理
+#ifdef NEG_ENCRYPT
 					NegKey = new CRsa;
-					NegKey->Init(KEY_FILE);
+					NegKey->Init(KEY_FILE);//创建加密DH协商的RSA对象
+
 					char* pplain;
-					NegKey->Decrypt(pmsg->m_datalen, pmsg->data, &pplain);
+					NegKey->Decrypt(pmsg->m_datalen, pmsg->data, &pplain);//解密协商信息
 					memmove(p, pplain, MAX);
-					memmove(g, pplain+MAX, MAX);
-					memmove(sa, pplain+MAX*2, MAX);
+					memmove(g, pplain + MAX, MAX);
+					memmove(sa, pplain + MAX * 2, MAX);
+					delete[] pplain;
+#else
+					memmove(p, pmsg->data, MAX);
+					memmove(g, pmsg->data + MAX, MAX);
+					memmove(sa, pmsg->data + MAX * 2, MAX);
+#endif
+
 					recon(b, p, g, sb);
 					getkey(b,sa,p,g,bu);
 
+#ifdef MSG_ENCRYPT
 					Key = new CDes;
-					Key->Init(bu,MAX);
+					Key->Init(bu,MAX);//创建数据加密的DES对象
+#endif
 
 					presdata = new char[MAX];
 					memmove(presdata,sb,MAX);
@@ -455,22 +464,22 @@ DWORD WINAPI msgdispatcher()
 		memcpy(&res_head.m_id,&pmsg->m_id,sizeof(pmsg->m_id));//对接收到命令id的响应
 		res_head.m_subtype = pmsg->m_subtype;
 		res_head.m_datalen = reslen;
-		char *pciphertext = NULL;
-//处理加密，同学们自行处理
+		char *pciphertext = presdata;//pciphertext三种情况：1、不加密 2、协商时RSA加密 3、协商成功后DES加密
 
-#ifdef ENCRYPT
-		if(is_negotialte == false){
-			int lencipher = Key->Encrypt(res_head.m_datalen, pmsg->data, &pciphertext);
+#ifdef NEG_ENCRYPT
+		if (is_negotialte == true) {
+			res_head.m_datalen = NegKey->Encrypt(MAX, presdata, &pciphertext);//RSA加密协商信息
+			delete NegKey;//协商结束RSA释放对象
 		}
 #endif
-		if (is_negotialte == true) {
-			res_head.m_datalen = NegKey->Encrypt(MAX, presdata, &pciphertext);
-			delete NegKey;
-		}
-		int max_try =3;
-		
-		/*udp报文可能由于网络状况而丢失，max_try给定重试发送的次数*/
 
+#ifdef MSG_ENCRYPT
+		if(is_negotialte == false)
+			int lencipher = Key->Encrypt(res_head.m_datalen, pmsg->data, &pciphertext);//DES加密数据
+#endif
+
+
+		int max_try =3;//udp报文可能由于网络状况而丢失，max_try给定重试发送的次数
 		while (max_try>0)
 		{
 			if (cfg.send(pciphertext,&res_head,&pmsg->dst_addr,M_TYPE_RES) < 0)//发送响应
@@ -480,7 +489,9 @@ DWORD WINAPI msgdispatcher()
 			}
 			break;
 		}
+#if defined(MSG_ENCRYPT)||defined(NEG_ENCRYPT)
 		delete[] pciphertext;
+#endif
 
 		if (max_try<=0)
 			res_flg = 0;
@@ -488,7 +499,8 @@ DWORD WINAPI msgdispatcher()
 			res_flg = 1;
 
 		del_buf(&pmsg->data);/*将动态分配的数据清空，回收空间*/
-		del_buf(&presdata);/*将动态分配的数据清空，回收空间*/
+		if(presdata)
+			del_buf(&presdata);/*将动态分配的数据清空，回收空间*/
 		if (pmsg)
 		{
 			delete pmsg;/*将动态分配的数据清空，回收空间*/

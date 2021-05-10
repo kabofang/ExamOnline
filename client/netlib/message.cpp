@@ -85,14 +85,15 @@ int DoMsgSend_negotiate(int type,int subtype,char *pdata,int datalen)
 	dst_addr.sin_family=AF_INET;
 	dst_addr.sin_addr.S_un.S_addr = inet_addr((LPCTSTR)SERVER_IP);
 	dst_addr.sin_port=htons(atoi((char *)(LPCTSTR)SERVER_PORT));
-
+#ifdef NEG_ENCRYPT
 	char* pciphertext;
-	head.m_datalen = NegKey->Encrypt(datalen, pdata, &pciphertext);
-
-	return g_cfg.sendcmd(&head, pciphertext,(SOCKADDR *)&dst_addr);
-
+	head.m_datalen = NegKey->Encrypt(datalen, pdata, &pciphertext);//RSA加密协商信息
+	int ret = g_cfg.sendcmd(&head, pciphertext, (SOCKADDR*)&dst_addr);
 	delete[] pciphertext;
-	//加密
+#else
+	int ret = g_cfg.sendcmd(&head, pdata,(SOCKADDR *)&dst_addr);
+#endif
+	return ret;
 }
 
 int DoMsgSend(int type,int subtype,char *pdata,int datalen)
@@ -106,22 +107,15 @@ int DoMsgSend(int type,int subtype,char *pdata,int datalen)
 	dst_addr.sin_family=AF_INET;
 	dst_addr.sin_addr.S_un.S_addr = inet_addr((LPCTSTR)SERVER_IP);
 	dst_addr.sin_port=htons(atoi((char *)(LPCTSTR)SERVER_PORT));
-	
-	//处理加密，同学们自行处理
 
-	char* pciphertext = NULL;
-#ifdef ENCRYPT
-
-	if (datalen) {
-		head.m_datalen = Key->Encrypt(datalen, pdata, &pciphertext);
-	}
-
-
-	int ret= g_cfg.sendcmd(&head, pciphertext, (SOCKADDR*)&dst_addr);
+#ifdef MSG_ENCRYPT
+	char* pciphertext;
+	head.m_datalen = Key->Encrypt(datalen, pdata, &pciphertext);
+	int ret= g_cfg.sendcmd(&head, pciphertext, (SOCKADDR*)&dst_addr);//DES加密数据
+	delete[] pciphertext;
 #else
 	int ret = g_cfg.sendcmd(&head, pdata, (SOCKADDR*)&dst_addr);
 #endif
-	delete[] pciphertext;
 	return ret;
 }
 

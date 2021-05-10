@@ -35,15 +35,22 @@ bool CMSGDISPATCHER::do_response(ULONG saddr,int subtype,char *pdata,int len)
 		break;
 	//处理密钥协商返回的响应，同学们自行完成
 	case MSG_KEY_NEGOTIATE:
+#ifdef NEG_ENCRYPT
 		int Keylen = NegKey->GetKeylen();
 		char* pplain;
-		NegKey->Decrypt(Keylen, pdata, &pplain);
-		delete NegKey;
+		NegKey->Decrypt(Keylen, pdata, &pplain);//RSA解密协商信息
+		delete NegKey;//协商结束释放资源
 		memmove(sb, pplain,MAX);
 		delete pplain;
+#else
+		memmove(sb, pdata, MAX);
+#endif
 		getkey(a,sb,p,g,au);
+
+#ifdef MSG_ENCRYPT
 		Key = new CDes;
-		Key->Init(au, MAX);
+		Key->Init(au, MAX);//用协商好的DES密钥创建DES对象
+#endif
 		break;
 	}
 	return rtnflg;
@@ -56,13 +63,11 @@ int msgdispatcher(void *pobj,MSGHEAD *phead,char *pdata,char **presdata)
 	if (phead == NULL)
 		return false;
 	
-	//处理解密，同学们自行处理
-	
-#ifdef ENCRYPT
+#ifdef MSG_ENCRYPT
 	char* plainText;
 	if (phead->m_subtype != MSG_KEY_NEGOTIATE && phead->m_datalen)
 	{
-		Key->Decrypt(phead->m_datalen, pdata, &plainText);
+		Key->Decrypt(phead->m_datalen, pdata, &plainText);//DES解密数据
 		memcpy(pdata, plainText, phead->m_datalen);
 		delete plainText;
 	}

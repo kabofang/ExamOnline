@@ -60,7 +60,6 @@
 #define PROC_PROCESSING				2			//正在线程处理
 #define PROC_FAIL					0			//处理失败
 
-#define ENCRYPT
 
 #define LOGON_FAIL		0
 #define LOGON_SUC		1

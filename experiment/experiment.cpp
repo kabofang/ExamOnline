@@ -123,6 +123,8 @@ int CexperimentApp::ExitInstance()
 	// TODO: Add your specialized code here and/or call the base class
 	CoUninitialize();
 	exit_threads();
+#ifdef MSG_ENCRYPT
 	delete Key;
+#endif
 	return CWinApp::ExitInstance();
 }

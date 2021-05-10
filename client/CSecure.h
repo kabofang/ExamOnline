@@ -1,5 +1,7 @@
 #pragma once
 #define CLIENT
+#define MSG_ENCRYPT
+#define NEG_ENCRYPT
 class CSecure{
 protected:
 	void* m_pKey;

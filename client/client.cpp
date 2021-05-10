@@ -90,19 +90,22 @@ BOOL CClientApp::InitInstance()
 #endif
 
 	init_threads();
-
 	CClientDlg dlg;
-	
-	//发送密钥协商，同学们自行定义
-	encon(a,p,g,sa);
-	
+
+	encon(a,p,g,sa);//中间密钥生成
+#ifdef NEG_ENCRYPT
 	NegKey = new CRsa;
-	NegKey->Init(KEY_FILE);
+	NegKey->Init(KEY_FILE);//创建加密DH协商的RSA对象
+#endif
+
 	char data[MAX * 3];
 	memmove(data, p, MAX);
 	memmove(data+MAX, g, MAX);
 	memmove(data+MAX*2,sa, MAX);
-
+	TRACE("\n**********************\n");
+	for(int i=0;i<50;i++)
+		TRACE("%x\n",sa[i]);
+	TRACE("\n**********************\n");
 	int stat;
 	if(LOGON_FAIL == (stat=DoMsgSend_negotiate(MSG_MANAGE,MSG_KEY_NEGOTIATE, data, MAX*3))){
 		AfxMessageBox("协商失败");
@@ -136,6 +139,8 @@ int CClientApp::ExitInstance()
 {
 	// TODO: Add your specialized code here and/or call the base class
 	CoUninitialize();
+#ifdef MSG_ENCRYPT
 	delete Key;
+#endif
 	return CWinApp::ExitInstance();
 }
