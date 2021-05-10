@@ -1,5 +1,5 @@
 #pragma once
-
+#define SERVER
 class CSecure{
 protected:
 	void* m_pKey;

@@ -11,7 +11,6 @@
   History:         // 历史修改记录
       <author>  <time>   <version >   <desc>  
 ***********************************************************/
-#include "../des.h"
 #include "../dh.h"
 #include "message.h"
 #include <memory.h>

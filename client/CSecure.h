@@ -1,5 +1,5 @@
 #pragma once
-
+#define CLIENT
 class CSecure{
 protected:
 	void* m_pKey;
