@@ -87,7 +87,6 @@ BOOL CClientApp::InitInstance()
 	CClientDlg dlg;
 	
 	//发送密钥协商，同学们自行定义
-	int NegotiateKey = GetNegotiateKey();
 	encon(a,p,g,sa);
 
 	RSA* p_Key = GetkeygenRSA();
@@ -142,8 +141,4 @@ int CClientApp::ExitInstance()
 	// TODO: Add your specialized code here and/or call the base class
 	CoUninitialize();
 	return CWinApp::ExitInstance();
-}
-
-int CClientApp::GetNegotiateKey() {
-	return 555555;
 }

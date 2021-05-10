@@ -85,6 +85,7 @@ int DoMsgSend_negotiate(int type,int subtype,char *pdata,int datalen)
 	dst_addr.sin_addr.S_un.S_addr = inet_addr((LPCTSTR)SERVER_IP);
 	dst_addr.sin_port=htons(atoi((char *)(LPCTSTR)SERVER_PORT));
 	return g_cfg.sendcmd(&head,pdata,(SOCKADDR *)&dst_addr);
+	//º”√‹
 }
 
 int DoMsgSend(int type,int subtype,char *pdata,int datalen)

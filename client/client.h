@@ -29,7 +29,6 @@ public:
 	//{{AFX_VIRTUAL(CClientApp)
 	public:
 	virtual BOOL InitInstance();
-	int GetNegotiateKey();
 	//}}AFX_VIRTUAL
 
 // Implementation
