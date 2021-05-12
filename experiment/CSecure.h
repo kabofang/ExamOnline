@@ -2,6 +2,10 @@
 #define SERVER
 //#define MSG_ENCRYPT
 //#define NEG_ENCRYPT
+#define KEY_FILE "prikey.pem"
+#define PUBKEY_FILE "pubkey.pem"
+#define PRIKEY_FILE "prikey.pem"
+#define CERT_FILE "cert"
 class CSecure{
 protected:
 	void* m_pKey;

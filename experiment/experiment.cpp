@@ -12,6 +12,8 @@ extern "C"
 #include "./experiment.h"
 #include "./database/database.h"
 #include "tempvar.h"
+#include "keygen.h"
+#include "CCert.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -86,6 +88,36 @@ BOOL CexperimentApp::InitInstance()
 
 	CWinApp::InitInstance();
 
+
+	FILE* fp;
+	if (!(fp = fopen(CERT_FILE, "r"))) {
+		GenerateRSAKey();
+		fp = fopen(PUBKEY_FILE, "rb+");
+		char buf[KEYLEN];
+		memset(buf, 0, KEYLEN);
+		int i = 0;
+		for (; i < KEYLEN; i++)
+			if (1 != fread(buf+i, 1, 1, fp))
+				break;
+		fclose(fp);
+		CCert Cert;
+		Cert.SetOwner("ExamOnline Server");
+		Cert.SetKeylen(i);
+		Cert.SetPubKey(buf);
+		Cert.Serialize("../CA/CA/cert");
+	}
+	else 
+		fclose(fp);
+
+	while (true) {
+		if (fp = fopen(CERT_FILE, "r")) {
+			fclose(fp);
+			break;
+		}
+		Sleep(500);
+	}
+
+
 	AfxEnableControlContainer();
 	CoInitialize(NULL);
 	LoadFromDb();//数据库初始化
@@ -115,6 +147,7 @@ BOOL CexperimentApp::InitInstance()
 
 	// 由于对话框已关闭，所以将返回 FALSE 以便退出应用程序，
 	// 而不是启动应用程序的消息泵。
+
 	return FALSE;
 }
 

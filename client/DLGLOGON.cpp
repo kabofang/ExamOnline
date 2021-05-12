@@ -46,6 +46,18 @@ END_MESSAGE_MAP()
 #define LEN_PASSWD 20
 void CDLGLOGON::OnOK() 
 {
+	CString strrandom, strinput;
+
+	GetDlgItemText(IDC_STATICRANDOM, strrandom);
+	//验证校验码是否匹配，同学们自行处理
+	//
+	GetDlgItemText(IDC_EDITCHECKSUM, strinput);
+	if (0 != strcmp(strinput, strrandom)) {
+		AfxMessageBox("校验码错误！");
+		return;
+	}
+
+
 	CString StrUsername, StrPassword;
 	GetDlgItemText(IDC_EDITUSERNAME, StrUsername);
 	GetDlgItemText(IDC_EDITPASSWD, StrPassword);
@@ -77,4 +89,24 @@ void CDLGLOGON::OnOK()
 	}
 	if (pMsg)
 		delete[]pMsg;
+}
+
+BOOL CDLGLOGON::OnInitDialog() {
+	CDialog::OnInitDialog();
+
+	// TODO: Add extra initialization here
+	time_t t;
+	srand((unsigned)time(&t));
+
+	char s[5];
+	memset(s, 0, 5);
+	for (int i = 0; i < 4; i++)
+	{
+		s[i] = 'A' + rand() % 10;
+	}
+
+	SetDlgItemText(IDC_STATICRANDOM, s);
+
+	return TRUE;  // return TRUE unless you set the focus to a control
+				  // EXCEPTION: OCX Property Pages should return FALSE
 }

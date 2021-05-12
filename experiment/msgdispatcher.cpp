@@ -7,7 +7,8 @@
 #include "CRsa.h"
 #include "CDes.h"
 #include "tempvar.h"
-#define KEY_FILE "prikey.pem"
+#include "sha.h"
+
 
 
 extern DWORD WINAPI msgdispatcher();
@@ -277,6 +278,13 @@ bool check_logon(char *pdata,CDATABASE &db)
 	CString strsql = "";
 	char chusername[20];
 	char chpasswd[20];
+	char userpasswd[200];
+	std::string dbpasswd;
+	int isalt;
+	char dbpasswdbuf[200];
+	SHA1_CONTEXT ctx;
+
+
 	if (!pdata)
 		return false;
 	memcpy(chusername,pdata,20);
@@ -292,27 +300,50 @@ bool check_logon(char *pdata,CDATABASE &db)
 	IBPP::Transaction tr = IBPP::TransactionFactory(db.get_db());
 	tr->Start();
 	
-	try{
-		rtn_flg = db.ExecSqlTransaction(sql,st,tr);
+	try {
+		rtn_flg = db.ExecSqlTransaction(sql, st, tr);
 		if (rtn_flg == false)
 		{
 			tr->Rollback();
 			return false;
 		}
 		rtn_flg = false;
-		while (st->Fetch())//对角色数据集进行遍历
+		if (st->Fetch())//有对应的用户，处理加盐的验证
 		{
-			st->Get("PASSWD",strpasswd);
-			if (!strcmp(chpasswd,strpasswd.c_str()))
-				rtn_flg = true;
+			st->Get("SALT", isalt);
+			st->Get("PASSWD", dbpasswd);
+
+			memcpy(dbpasswdbuf, dbpasswd.c_str(), strlen(dbpasswd.c_str()));
+			sha1_init(&ctx);
+			sha1_write(&ctx, (unsigned char*)chpasswd, strlen(chpasswd) + 1);
+			sha1_write(&ctx, (unsigned char*)&isalt, sizeof(isalt));
+			sha1_final(&ctx);
+			memset(userpasswd, 0, 200);
+			memcpy(userpasswd, ctx.buf, 64);
+			for (int i = 0; i < 64; i++)
+			{
+				if (userpasswd[i] == 0)
+					userpasswd[i] = '#';
+			}
+			int is_matched = true;
+
+			for (int j = 0; j < 64; j++) {
+				if (userpasswd[j] != dbpasswdbuf[j]) {
+					is_matched = false;
+					break;
+				}
+
+			}
+			rtn_flg = is_matched;
+			////////////////////////
 		}
 		tr->Commit();
 	}
-	catch(IBPP::SQLException &e){ 
-        tr->Rollback();
+	catch (IBPP::SQLException& e) {
+		tr->Rollback();
 		rtn_flg = false;
 	}
-		
+
 	return rtn_flg;
 }
 

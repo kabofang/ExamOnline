@@ -1,4 +1,4 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -13,13 +13,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Chinese (中国) resources
+// 中文(简体，中国) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
-#ifdef _WIN32
 LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
 #pragma code_page(936)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -27,18 +25,18 @@ LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE DISCARDABLE 
+1 TEXTINCLUDE 
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE DISCARDABLE 
+2 TEXTINCLUDE 
 BEGIN
     "#include ""afxres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE DISCARDABLE 
+3 TEXTINCLUDE 
 BEGIN
     "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
     "#define _AFX_NO_OLE_RESOURCES\r\n"
@@ -66,15 +64,16 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDR_MAINFRAME           ICON    DISCARDABLE     "res\\client.ico"
+IDR_MAINFRAME           ICON                    "res\\client.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 235, 55
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_ABOUTBOX DIALOG 0, 0, 235, 55
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "关于 client"
 FONT 9, "宋体"
 BEGIN
@@ -85,8 +84,7 @@ BEGIN
 END
 
 IDD_CLIENT_DIALOG DIALOGEX 0, 0, 425, 250
-STYLE DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
-    WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_APPWINDOW
 CAPTION "client"
 FONT 9, "MS Shell Dlg", 0, 0, 0x1
@@ -97,8 +95,7 @@ BEGIN
 END
 
 IDD_DIALOGEDIT DIALOGEX 0, 0, 445, 249
-STYLE DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
-    WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "Dialog"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
@@ -119,7 +116,7 @@ BEGIN
 END
 
 IDD_DIALOG_TEST DIALOGEX 0, 0, 475, 228
-STYLE DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Dialog"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
@@ -127,8 +124,7 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,263,197,50,14
     LTEXT           "Static",IDC_STATIC_NUM,99,10,19,8
     LTEXT           "题号",IDC_STATIC,69,10,17,8
-    EDITTEXT        IDC_EDITBODY,71,23,289,84,ES_MULTILINE | ES_AUTOHSCROLL | 
-                    ES_READONLY
+    EDITTEXT        IDC_EDITBODY,71,23,289,84,ES_MULTILINE | ES_AUTOHSCROLL | ES_READONLY
     LTEXT           "A",IDC_STATIC,76,116,8,8
     LTEXT           "C",IDC_STATIC,73,140,8,8
     LTEXT           "B",IDC_STATIC,237,119,8,8
@@ -144,21 +140,23 @@ BEGIN
     PUSHBUTTON      "交卷",IDC_BUTTON1,367,172,50,14
 END
 
-IDD_DIALOGLOGON DIALOG DISCARDABLE  0, 0, 187, 94
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_DIALOGLOGON DIALOGEX 0, 0, 187, 171
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "对话"
-FONT 10, "System"
+FONT 10, "System", 0, 0, 0x0
 BEGIN
-    DEFPUSHBUTTON   "登录",IDOK,39,61,50,14
-    PUSHBUTTON      "取消",IDCANCEL,105,61,50,14
+    DEFPUSHBUTTON   "登录",IDOK,33,136,50,14
+    PUSHBUTTON      "取消",IDCANCEL,101,134,50,14
     LTEXT           "用户名",IDC_STATIC,26,16,35,10
     EDITTEXT        IDC_EDITUSERNAME,74,14,51,14,ES_AUTOHSCROLL
-    LTEXT           "密码",IDC_STATIC,25,37,35,10
+    LTEXT           "验证码",IDC_STATICRANDOM,138,80,35,10
     EDITTEXT        IDC_EDITPASSWD,74,34,51,14,ES_AUTOHSCROLL
+    LTEXT           "校验码",IDC_STATIC,25,79,35,10
+    EDITTEXT        IDC_EDITCHECKSUM,66,78,51,14,ES_AUTOHSCROLL
+    LTEXT           "密码",IDC_STATIC,32,44,35,10
 END
 
 
-#ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
@@ -181,15 +179,13 @@ BEGIN
     BEGIN
         BLOCK "080404B0"
         BEGIN
-            VALUE "CompanyName", "\0"
-            VALUE "FileDescription", "client Microsoft 基础类应用程序\0"
-            VALUE "FileVersion", "1, 0, 0, 1\0"
-            VALUE "InternalName", "client\0"
-            VALUE "LegalCopyright", "版权所有 (C) 2010\0"
-            VALUE "LegalTrademarks", "\0"
-            VALUE "OriginalFilename", "client.EXE\0"
-            VALUE "ProductName", "client 应用程序\0"
-            VALUE "ProductVersion", "1, 0, 0, 1\0"
+            VALUE "FileDescription", "client Microsoft 基础类应用程序"
+            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "InternalName", "client"
+            VALUE "LegalCopyright", "版权所有 (C) 2010"
+            VALUE "OriginalFilename", "client.EXE"
+            VALUE "ProductName", "client 应用程序"
+            VALUE "ProductVersion", "1, 0, 0, 1"
         END
     END
     BLOCK "VarFileInfo"
@@ -198,8 +194,6 @@ BEGIN
     END
 END
 
-#endif    // !_MAC
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -207,7 +201,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
@@ -246,7 +240,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 180
         TOPMARGIN, 7
-        BOTTOMMARGIN, 87
+        BOTTOMMARGIN, 164
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -254,15 +248,26 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DIALOGLOGON AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // String Table
 //
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDS_ABOUTBOX            "关于 client(&A)..."
 END
 
-#endif    // Chinese (中国) resources
+#endif    // 中文(简体，中国) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
