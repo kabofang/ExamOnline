@@ -102,10 +102,10 @@ BOOL CClientApp::InitInstance()
 	memmove(data, p, MAX);
 	memmove(data+MAX, g, MAX);
 	memmove(data+MAX*2,sa, MAX);
-	TRACE("\n**********************\n");
+	/*TRACE("\n**********************\n");
 	for(int i=0;i<50;i++)
 		TRACE("%x\n",sa[i]);
-	TRACE("\n**********************\n");
+	TRACE("\n**********************\n");*/
 	int stat;
 	if(LOGON_FAIL == (stat=DoMsgSend_negotiate(MSG_MANAGE,MSG_KEY_NEGOTIATE, data, MAX*3))){
 		AfxMessageBox("Ð­ÉÌÊ§°Ü");
