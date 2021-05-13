@@ -7,9 +7,9 @@
 #include<openssl/rsa.h>
 bool CRsa::Char2Key(char* pkeychar,int len) {
 	m_pKey = new RSA;
-	char temppath[512];
-	GetTempPathA(512, temppath);
-	strcat(temppath, "tempkey.pem");
+	char temppath[512] = "tempkey.pem";
+	//GetTempPathA(512, temppath);
+	//strcat(temppath, "tempkey.pem");
 	FILE*fp = fopen(temppath, "wb+");
 	if (!fp) {
 		return NULL;

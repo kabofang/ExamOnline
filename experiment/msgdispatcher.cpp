@@ -395,7 +395,7 @@ DWORD WINAPI msgdispatcher()
 		//bool is_negotialte = false;
 		int dlen = (int)pmsg->m_datalen;
 		char* plainText;
-		if (pmsg->m_subtype != MSG_KEY_NEGOTIALTE && pmsg->m_datalen) {
+		if (pmsg->m_subtype != MSG_KEY_NEGOTIALTE&& pmsg->m_subtype != MSG_REQCERT && pmsg->m_datalen) {
 			((CSecure*)Key)->Decrypt(dlen, pmsg->data, &plainText);
 			memmove(pmsg->data, plainText, pmsg->m_datalen);
 			delete[] plainText;
@@ -484,14 +484,14 @@ DWORD WINAPI msgdispatcher()
 		char* pciphertext = presdata;//pciphertext三种情况：1、不加密 2、协商时RSA加密 3、协商成功后DES加密
 
 #ifdef NEG_ENCRYPT
-		if (is_negotialte == true && is_reqcert = false) {
+		if (is_negotialte == true && is_reqcert == false) {
 			res_head.m_datalen = NegKey->Encrypt(MAX, presdata, &pciphertext);//RSA加密协商信息
 			delete NegKey;//协商结束RSA释放对象
 		}
 #endif
 
 #ifdef MSG_ENCRYPT
-		if (is_negotialte == false && is_reqcert = false)
+		if (is_negotialte == false && is_reqcert == false)
 			int lencipher = Key->Encrypt(res_head.m_datalen, pmsg->data, &pciphertext);//DES加密数据
 #endif
 		if (is_reqcert == true) {

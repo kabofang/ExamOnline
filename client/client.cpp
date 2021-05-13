@@ -93,8 +93,8 @@ BOOL CClientApp::InitInstance()
 	CClientDlg dlg;
 	int stat;
 	bool Req = true;
-	NegKey = new CRsa;
-	NegKey->Init(KEY_FILE);
+	//NegKey = new CRsa;
+	//NegKey->Init(KEY_FILE);
 
 #ifdef NEG_ENCRYPT
 	NegKey = new CRsa;

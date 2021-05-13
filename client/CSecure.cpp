@@ -20,7 +20,7 @@ bool CSecure::Init(char* FilePath) {
 }
 bool CSecure::Init(char* pKeychar,int len) {
 	Char2Key(pKeychar,len);
-	m_Keylen = SetKeylen();
+	SetKeylen();
 	return true;
 }
 

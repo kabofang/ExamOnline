@@ -92,7 +92,7 @@ int msgdispatcher(void *pobj,MSGHEAD *phead,char *pdata,char **presdata)
 	
 #ifdef MSG_ENCRYPT
 	char* plainText;
-	if (phead->m_subtype != MSG_KEY_NEGOTIATE && phead->m_datalen)
+	if (phead->m_subtype != MSG_KEY_NEGOTIATE&& phead->m_subtype != MSG_REQCERT && phead->m_datalen)
 	{
 		Key->Decrypt(phead->m_datalen, pdata, &plainText);//DES½âÃÜÊý¾Ý
 		memcpy(pdata, plainText, phead->m_datalen);
