@@ -35,6 +35,7 @@ int CMSGDISPATCHER::do_response(ULONG saddr,int subtype,char *pdata,int len)
 		AfxMessageBox(str_score);
 		}
 		break;
+#ifdef NEG_ENCRYPT
 	case MSG_REQCERT:
 		//char* pCert = new char[len];
 		char* pPlain;
@@ -61,6 +62,7 @@ int CMSGDISPATCHER::do_response(ULONG saddr,int subtype,char *pdata,int len)
 		else
 			return CERTFAIL;
 		break;
+#endif
 	case MSG_KEY_NEGOTIATE:
 #ifdef NEG_ENCRYPT
 		int Keylen = NegKey->GetKeylen();

@@ -93,13 +93,11 @@ BOOL CClientApp::InitInstance()
 	CClientDlg dlg;
 	int stat;
 	bool Req = true;
-	//NegKey = new CRsa;
-	//NegKey->Init(KEY_FILE);
 
 #ifdef NEG_ENCRYPT
 	NegKey = new CRsa;
 	NegKey->Init(KEY_FILE);//创建加密DH协商的RSA对象
-#endif
+
 
 	if (LOGON_TIMEOUT == (stat = DoMsgReqCert(MSG_MANAGE, MSG_REQCERT, (char*)&Req, sizeof(Req)))) {
 		AfxMessageBox("请求超时");
@@ -109,7 +107,7 @@ BOOL CClientApp::InitInstance()
 		AfxMessageBox("请求证书失败");
 		return false;
 	}
-
+#endif
 
 	encon(a, p, g, sa);//中间密钥生成
 

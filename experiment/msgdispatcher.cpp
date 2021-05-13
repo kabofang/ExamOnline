@@ -427,6 +427,7 @@ DWORD WINAPI msgdispatcher()
 			case MSG_TEST_COMMIT:
 				res_flg = score_test(pmsg->data, pmsg->m_datalen, &presdata, reslen, database);
 				break;
+#ifdef NEG_ENCRYPT
 			case MSG_REQCERT:
 				is_reqcert = true;
 				fp = fopen(CERT_FILE, "rb+");
@@ -438,6 +439,7 @@ DWORD WINAPI msgdispatcher()
 				fclose(fp);
 				res_flg = 1;
 					break;
+#endif
 			case MSG_KEY_NEGOTIALTE:
 #ifdef NEG_ENCRYPT
 				NegKey = new CRsa;
@@ -488,16 +490,17 @@ DWORD WINAPI msgdispatcher()
 			res_head.m_datalen = NegKey->Encrypt(MAX, presdata, &pciphertext);//RSA加密协商信息
 			delete NegKey;//协商结束RSA释放对象
 		}
+
+		if (is_reqcert == true) {
+			res_head.m_datalen = CertLen;
+			pciphertext = pCert;
+		}
 #endif
 
 #ifdef MSG_ENCRYPT
 		if (is_negotialte == false && is_reqcert == false)
 			int lencipher = Key->Encrypt(res_head.m_datalen, pmsg->data, &pciphertext);//DES加密数据
 #endif
-		if (is_reqcert == true) {
-			res_head.m_datalen = CertLen;
-			pciphertext = pCert;
-		}
 
 		int max_try = 3;//udp报文可能由于网络状况而丢失，max_try给定重试发送的次数
 		while (max_try > 0)
