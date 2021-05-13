@@ -430,7 +430,7 @@ DWORD WINAPI msgdispatcher()
 #ifdef NEG_ENCRYPT
 			case MSG_REQCERT:
 				is_reqcert = true;
-				fp = fopen(CERT_FILE, "rb+");
+				fp = fopen(CERT_FILE, "rb+");//将证书文件读入内存
 				fseek(fp, 0, SEEK_END);
 				CertLen = ftell(fp);
 				pCert = (char*)malloc(CertLen);
@@ -448,23 +448,21 @@ DWORD WINAPI msgdispatcher()
 				char* pplain;
 				NegKey->Decrypt(pmsg->m_datalen, pmsg->data, &pplain);//解密协商信息
 				memmove(p, pplain, MAX);
-				memmove(g, pplain + MAX, MAX);
+				memmove(g, pplain + MAX, MAX);				//获取p g sa
 				memmove(sa, pplain + MAX * 2, MAX);
 				delete[] pplain;
 #else
 				memmove(p, pmsg->data, MAX);
-				memmove(g, pmsg->data + MAX, MAX);
+				memmove(g, pmsg->data + MAX, MAX);		//加密关闭时直接读取数据
 				memmove(sa, pmsg->data + MAX * 2, MAX);
 #endif
-
 				recon(b, p, g, sb);
-				getkey(b, sa, p, g, bu);
+				getkey(b, sa, p, g, bu);		//利用客户端发来的p g sa 生成自己的des密钥bu
 
 #ifdef MSG_ENCRYPT
 				Key = new CDes;
-				Key->Init(bu, MAX);//创建数据加密的DES对象
+				Key->Init(bu, MAX);				//利用密钥bu，创建用于后续通信数据加密的DES对象
 #endif
-
 				presdata = new char[MAX];
 				memmove(presdata, sb, MAX);
 				reslen = MAX;
@@ -486,13 +484,13 @@ DWORD WINAPI msgdispatcher()
 		char* pciphertext = presdata;//pciphertext三种情况：1、不加密 2、协商时RSA加密 3、协商成功后DES加密
 
 #ifdef NEG_ENCRYPT
-		if (is_negotialte == true && is_reqcert == false) {
+		if (is_negotialte == true && is_reqcert == false) {		//如果是密钥协商消息，则发送服务器中间密钥bu
 			res_head.m_datalen = NegKey->Encrypt(MAX, presdata, &pciphertext);//RSA加密协商信息
 			delete NegKey;//协商结束RSA释放对象
 		}
 
 		if (is_reqcert == true) {
-			res_head.m_datalen = CertLen;
+			res_head.m_datalen = CertLen;//如果是证书请求消息，则发送的数据为证书
 			pciphertext = pCert;
 		}
 #endif

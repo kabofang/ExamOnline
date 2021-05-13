@@ -39,13 +39,13 @@ int CMSGDISPATCHER::do_response(ULONG saddr,int subtype,char *pdata,int len)
 	case MSG_REQCERT:
 		//char* pCert = new char[len];
 		char* pPlain;
-		NegKey->Decrypt(len, pdata, &pPlain);
+		NegKey->Decrypt(len, pdata, &pPlain);				//使用CA公钥将证书解密
 		Cert = new CCert;
 		memmove(Cert, pPlain, sizeof(CCert));
 		if (strcmp(Cert->GetOwner(), "ExamOnline Server") || strcmp(Cert->GetLusser(), "ExamOnline CA") )
-			return CERTFAIL;
-		if (!strcmp(Cert->GetHash(), "DIY_SHA")) {
-			unsigned char pHashValue[64];
+			return CERTFAIL;								//验证证书内容中的owner是否为考试系统服务器，颁发者是否是自定义的CA
+		if (!strcmp(Cert->GetHash(), "DIY_SHA")) {			//查看消息摘要算法，根据消息摘要算法的不同，进行不同的操作
+			unsigned char pHashValue[64];					//这里只有自定义sha1算法，所以直接计算hash值
 			memmove(pHashValue, Cert->GetHashValue(), 64);
 			memset(Cert->GetHashValue(), 0, 64);
 			SHA1_CONTEXT ctx;
@@ -53,10 +53,10 @@ int CMSGDISPATCHER::do_response(ULONG saddr,int subtype,char *pdata,int len)
 			sha1_write(&ctx, (unsigned char*)Cert, 3 * DATALEN + KEYLEN + HASHLEN + sizeof(int));
 			sha1_final(&ctx);
 			for (int i = 0; i < 64; i++)
-				if (ctx.buf[i] != pHashValue[i])
+				if (ctx.buf[i] != pHashValue[i])			//把计算出的hash值与原证书中的hash值对比，以验证证书的完整性
 					return CERTFAIL;
 			delete (CRsa*)NegKey;
-			NegKey = new CRsa;
+			NegKey = new CRsa;								//证书合法且完整，从中取出公钥，生成Rsa对象
 			NegKey->Init(Cert->GetPubKey(), Cert->GetKeylen());
 		}
 		else

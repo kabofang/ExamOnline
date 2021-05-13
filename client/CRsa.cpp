@@ -8,8 +8,8 @@
 bool CRsa::Char2Key(char* pkeychar,int len) {
 	m_pKey = new RSA;
 	char temppath[512] = "tempkey.pem";
-	//GetTempPathA(512, temppath);
-	//strcat(temppath, "tempkey.pem");
+	GetTempPathA(512, temppath);
+	strcat(temppath, "tempkey.pem");
 	FILE*fp = fopen(temppath, "wb+");
 	if (!fp) {
 		return NULL;
@@ -66,7 +66,7 @@ int CRsa::Decrypt(int lenciphertext, char* pciphertext, char** pplaintext) {
 	return lenplain;
 }
 
-bool CRsa::Release() {
+CRsa::~CRsa() {
 	RSA_free((RSA*)m_pKey);
-	return true;
+	return ;
 }

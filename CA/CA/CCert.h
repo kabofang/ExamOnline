@@ -4,12 +4,12 @@
 #define HASHLEN 64
 class CCert {
 private:
-	int m_Keylen;
-	char m_Owner[DATALEN];
-	char m_Lssuer[DATALEN];
-	char m_Hash[DATALEN];
-	char m_HashValue[HASHLEN];
-	char m_PubKey[KEYLEN];
+	int m_Keylen;//公钥长度
+	char m_Owner[DATALEN];//所有者
+	char m_Lssuer[DATALEN];//颁发者
+	char m_Hash[DATALEN];//消息摘要算法
+	char m_HashValue[HASHLEN];//Hash值
+	char m_PubKey[KEYLEN];//公钥
 public:
 	CCert();
 

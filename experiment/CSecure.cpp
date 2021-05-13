@@ -3,7 +3,7 @@
 #define SERVER
 
 bool CSecure::Init(char* FilePath) {
-	FILE*fp=fopen(FilePath, "rb");
+	FILE* fp = fopen(FilePath, "rb");
 	if (!fp) {
 		return false;
 	}
@@ -19,13 +19,13 @@ bool CSecure::Init(char* FilePath) {
 	SetKeylen();
 	return true;
 }
-bool CSecure::Init(char* pKeychar,int len) {
-	Char2Key(pKeychar,len);
-	m_Keylen = SetKeylen();
+bool CSecure::Init(char* pKeychar, int len) {
+	Char2Key(pKeychar, len);
+	SetKeylen();
 	return true;
 }
 
-bool CSecure::Char2Key(char* pKeychar, int len){
+bool CSecure::Char2Key(char* pKeychar, int len) {
 	m_pKey = pKeychar;
 	return true;
 }
@@ -35,11 +35,7 @@ bool CSecure::SetKeylen() {
 }
 
 CSecure::~CSecure() {
-	Release();
 	return;
-}
-bool CSecure::Release() {
-	return true;
 }
 
 int CSecure::GetKeylen() {

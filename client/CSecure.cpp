@@ -34,11 +34,7 @@ bool CSecure::SetKeylen() {
 }
 
 CSecure::~CSecure() {
-	Release();
 	return;
-}
-bool CSecure::Release() {
-	return true;
 }
 
 int CSecure::GetKeylen() {

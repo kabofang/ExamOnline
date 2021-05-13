@@ -5,19 +5,18 @@
 #include <fileapi.h>
 #include<openssl/pem.h>
 #include<openssl/rsa.h>
-bool CRsa::Char2Key(char* pkeychar,int len) {
-
+bool CRsa::Char2Key(char* pkeychar, int len) {
 	m_pKey = new RSA;
-	char temppath[512];
+	char temppath[512] = "tempkey.pem";
 	GetTempPathA(512, temppath);
 	strcat(temppath, "tempkey.pem");
-	FILE*fp = fopen(temppath, "wb+");
+	FILE* fp = fopen(temppath, "wb+");
 	if (!fp) {
 		return NULL;
 	}
 	fwrite(pkeychar, 1, len, fp);
 	fclose(fp);
-	fp=fopen(temppath, "r");
+	fp = fopen(temppath, "r");
 #ifdef CLIENT
 	m_pKey = PEM_read_RSAPublicKey(fp, 0, 0, 0);
 #else
@@ -67,7 +66,7 @@ int CRsa::Decrypt(int lenciphertext, char* pciphertext, char** pplaintext) {
 	return lenplain;
 }
 
-bool CRsa::Release() {
+CRsa::~CRsa() {
 	RSA_free((RSA*)m_pKey);
-	return true;
+	return;
 }
