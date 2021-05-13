@@ -74,6 +74,21 @@ void Cmessage::StopService()
 
 bool Cmessage::is_initialized = false;
 
+int DoMsgReqCert(int type, int subtype, char* pdata, int datalen) {
+	MSGHEAD head;
+	SOCKADDR_IN dst_addr;
+	memset(&head, 0, sizeof(head));
+	head.m_type = type;
+	head.m_subtype = subtype;//策略集装载
+	head.m_datalen = datalen;
+	dst_addr.sin_family = AF_INET;
+	dst_addr.sin_addr.S_un.S_addr = inet_addr((LPCTSTR)SERVER_IP);
+	dst_addr.sin_port = htons(atoi((char*)(LPCTSTR)SERVER_PORT));
+
+	int ret = g_cfg.sendcmd(&head, pdata, (SOCKADDR*)&dst_addr);
+	return ret;
+
+}
 int DoMsgSend_negotiate(int type,int subtype,char *pdata,int datalen)
 {
 	MSGHEAD head;
@@ -630,13 +645,13 @@ int Config::sendcmd(MSGHEAD *phead,char *psnddata,SOCKADDR *dst_addr)
 
 	int i = 0;
 	int b_result = false;
-	bool b_recvd = false;
+	int b_recvd = false;
 	EnterCriticalSection(&msg_saved.msgcts_section);
 	msg_saved.b_recvd = false;
 	msg_saved.b_result = false;
 	b_recvd = msg_saved.b_recvd;
 	LeaveCriticalSection(&msg_saved.msgcts_section);
-	while ((i < 20) && (!b_recvd))
+	while ((i < 20) && !b_recvd)
 	{
 		EnterCriticalSection(&msg_saved.msgcts_section);
 		if (msg_saved.b_recvd)//收到响应报文
@@ -650,8 +665,10 @@ int Config::sendcmd(MSGHEAD *phead,char *psnddata,SOCKADDR *dst_addr)
 		Sleep(100);
 		i++;
 	}
-	if (20 == i && !b_recvd)
-		b_result = LOGON_TIMEOUT;//20*100ms等待后未收到回复则超时
+	if (20 == i && b_recvd != LOGON_SUC && b_recvd != CERTFAIL)
+		b_result = LOGON_TIMEOUT;//20*100ms等待后未收到回复则超时	
+	if (b_recvd == CERTFAIL)
+		return CERTFAIL;
 	/*
 	if (i==5)
 	{
@@ -719,7 +736,7 @@ int Config::sendcmd(MSGHEAD *phead,char *psnddata,SOCKADDR *dst_addr)
 							false 失败
   Others:         //
 *************************************************/
-bool Config::recvcmd(SOCKADDR *dst_addr)
+int Config::recvcmd(SOCKADDR *dst_addr)
 {
 	char *pdata = NULL;
 	char *presdata = NULL;
@@ -762,6 +779,10 @@ bool Config::recvcmd(SOCKADDR *dst_addr)
 	if (pproc)
 	{
 		res_flg = pproc(m_pobj,&head,pdata,&presdata);
+		if (res_flg == CERTFAIL) {
+			msg_saved.b_recvd = CERTFAIL;
+			return true;
+		}
 	}
 	
 	if (res_flg !=PROC_PROCESSING)//消息处理完毕

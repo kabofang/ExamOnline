@@ -16,6 +16,7 @@ extern "C"
 #include "CDes.h"
 #include "CSecure.h"
 #include "tempvar.h"
+#define KEY_FILE "pubkey.pem"
 
 
 #ifdef _DEBUG
@@ -39,15 +40,15 @@ Config g_cfg;
 
 void init_threads()//初始化所有线程
 {
-	g_cfg.setproc(NULL,msgdispatcher);
-	CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)recvmsg,
-								&g_cfg,0,NULL);//创建消息接收线程
+	g_cfg.setproc(NULL, msgdispatcher);
+	CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)recvmsg,
+		&g_cfg, 0, NULL);//创建消息接收线程
 }
 
 void exit_threads()//初始化所有线程
 {
 	g_cfg.SetEndflg(true);
-	while (g_cfg.GetEndflg()==true)
+	while (g_cfg.GetEndflg() == true)
 	{
 		Sleep(100);
 	}
@@ -67,7 +68,7 @@ CClientApp::CClientApp()
 CClientApp theApp;
 
 //定义dh算法所需要的参数
-char sa[MAX],p[MAX],g[MAX],au[MAX],sb[MAX];
+char sa[MAX], p[MAX], g[MAX], au[MAX], sb[MAX];
 int a = 12345;
 /////////////////////////////////////////////////////////////////////////////
 // CClientApp initialization
@@ -90,23 +91,38 @@ BOOL CClientApp::InitInstance()
 
 	init_threads();
 	CClientDlg dlg;
+	int stat;
+	bool Req = true;
+	NegKey = new CRsa;
+	NegKey->Init(KEY_FILE);
 
-	encon(a,p,g,sa);//中间密钥生成
 #ifdef NEG_ENCRYPT
 	NegKey = new CRsa;
 	NegKey->Init(KEY_FILE);//创建加密DH协商的RSA对象
 #endif
 
+	if (LOGON_TIMEOUT == (stat = DoMsgReqCert(MSG_MANAGE, MSG_REQCERT, (char*)&Req, sizeof(Req)))) {
+		AfxMessageBox("请求超时");
+		return false;
+	}
+	else if (CERTFAIL == stat) {
+		AfxMessageBox("请求证书失败");
+		return false;
+	}
+
+
+	encon(a, p, g, sa);//中间密钥生成
+
+
 	char data[MAX * 3];
 	memmove(data, p, MAX);
-	memmove(data+MAX, g, MAX);
-	memmove(data+MAX*2,sa, MAX);
+	memmove(data + MAX, g, MAX);
+	memmove(data + MAX * 2, sa, MAX);
 	/*TRACE("\n**********************\n");
 	for(int i=0;i<50;i++)
 		TRACE("%x\n",sa[i]);
 	TRACE("\n**********************\n");*/
-	int stat;
-	if(LOGON_FAIL == (stat=DoMsgSend_negotiate(MSG_MANAGE,MSG_KEY_NEGOTIATE, data, MAX*3))){
+	if (LOGON_FAIL == (stat = DoMsgSend_negotiate(MSG_MANAGE, MSG_KEY_NEGOTIATE, data, MAX * 3))) {
 		AfxMessageBox("协商失败");
 		return false;
 	}
@@ -115,7 +131,7 @@ BOOL CClientApp::InitInstance()
 		return false;
 	}
 	CDLGLOGON dlglogon;
-	
+
 	int nResponse = dlglogon.DoModal();
 	if (nResponse == IDOK)
 	{

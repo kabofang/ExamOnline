@@ -2,14 +2,16 @@
 #include "msgdispatcher.h"
 #include "CSecure.h"
 #include "CDes.h"
+#include "CRsa.h"
 #include "tempvar.h"
+#include "sha.h"
 
 HWND CMSGDISPATCHER::h_dlgtest = NULL;
 extern char sa[MAX],sb[MAX],p[MAX],g[MAX],au[MAX];
 extern int a;
 
 //定义消息分发函数，实现对于接收到的任意消息的处理
-bool CMSGDISPATCHER::do_response(ULONG saddr,int subtype,char *pdata,int len)
+int CMSGDISPATCHER::do_response(ULONG saddr,int subtype,char *pdata,int len)
 {
 	bool rtnflg = false;
 	char *pnew = NULL;
@@ -33,7 +35,32 @@ bool CMSGDISPATCHER::do_response(ULONG saddr,int subtype,char *pdata,int len)
 		AfxMessageBox(str_score);
 		}
 		break;
-	//处理密钥协商返回的响应，同学们自行完成
+	case MSG_REQCERT:
+		//char* pCert = new char[len];
+		char* pPlain;
+		NegKey->Decrypt(len, pdata, &pPlain);
+		Cert = new CCert;
+		memmove(Cert, pPlain, sizeof(CCert));
+		if (strcmp(Cert->GetOwner(), "ExamOnline Server") || strcmp(Cert->GetLusser(), "ExamOnline CA") )
+			return CERTFAIL;
+		if (!strcmp(Cert->GetHash(), "DIY_SHA")) {
+			unsigned char pHashValue[64];
+			memmove(pHashValue, Cert->GetHashValue(), 64);
+			memset(Cert->GetHashValue(), 0, 64);
+			SHA1_CONTEXT ctx;
+			sha1_init(&ctx);
+			sha1_write(&ctx, (unsigned char*)Cert, 3 * DATALEN + KEYLEN + HASHLEN + sizeof(int));
+			sha1_final(&ctx);
+			for (int i = 0; i < 64; i++)
+				if (ctx.buf[i] != pHashValue[i])
+					return CERTFAIL;
+			delete (CRsa*)NegKey;
+			NegKey = new CRsa;
+			NegKey->Init(Cert->GetPubKey(), Cert->GetKeylen());
+		}
+		else
+			return CERTFAIL;
+		break;
 	case MSG_KEY_NEGOTIATE:
 #ifdef NEG_ENCRYPT
 		int Keylen = NegKey->GetKeylen();
@@ -59,7 +86,7 @@ bool CMSGDISPATCHER::do_response(ULONG saddr,int subtype,char *pdata,int len)
 //消息接收处理分发入口函数
 int msgdispatcher(void *pobj,MSGHEAD *phead,char *pdata,char **presdata)
 {
-	bool rtnflg = true;
+	int rtnflg = true;
 	if (phead == NULL)
 		return false;
 	

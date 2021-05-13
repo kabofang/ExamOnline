@@ -50,16 +50,16 @@ bool CCert::SetKeylen(int x) {
 int CCert::GetKeylen(void) {
 	return m_Keylen;
 }
-
 bool CCert::Serialize(const char* pFilePath)const {
 	FILE* fp = fopen(pFilePath, "wb");
 
+	fwrite(&m_Keylen, 1, sizeof(m_Keylen), fp);
 	fwrite(m_Lssuer, 1, DATALEN, fp);
 	fwrite(m_Owner, 1, DATALEN, fp);
 	fwrite(m_Hash, 1, DATALEN, fp);
 	fwrite(m_HashValue, 1, HASHLEN, fp);
 	fwrite(m_PubKey, 1, KEYLEN, fp);
-	fwrite(&m_Keylen, 1, sizeof(m_Keylen), fp);
+
 
 	fclose(fp);
 	return true;
@@ -67,12 +67,12 @@ bool CCert::Serialize(const char* pFilePath)const {
 bool CCert::DeSerialize(const char* pFilePath) {
 	FILE* fp = fopen(pFilePath, "rb");
 
+	fread(&m_Keylen, 1, sizeof(m_Keylen), fp);
 	fread(m_Lssuer, 1, DATALEN, fp);
 	fread(m_Owner, 1, DATALEN, fp);
 	fread(m_Hash, 1, DATALEN, fp);
 	fread(m_HashValue, 1, HASHLEN, fp);
 	fread(m_PubKey, 1, KEYLEN, fp);
-	fread(&m_Keylen, 1, sizeof(m_Keylen), fp);
 
 	fclose(fp);
 	return true;

@@ -1,7 +1,7 @@
 #pragma once
 #define CLIENT
-#define MSG_ENCRYPT
-#define NEG_ENCRYPT
+//#define MSG_ENCRYPT
+//#define NEG_ENCRYPT
 #define KEY_FILE "pubkey.pem"
 class CSecure{
 protected:

@@ -5,10 +5,10 @@
   Description:    // 消息类低层处理函数实现，包括消息发送、接收功能
   Others:         // 无
   Function List:  // 主要函数列表，每条记录应包括函数名及功能简要说明
-    1. bool Cmessage::init_socket();//套接字初始化
+	1. bool Cmessage::init_socket();//套接字初始化
 	2. int Cmessage::send(char *pbuf,unsigned int len,MSGHEAD *phead,SOCKADDR *dst_addr,int M_TYPE);			//以SSL UDP加密方式传递buffer内容，返回成功或失败，实现消息窗口管理
 	3. int Cmessage::recv(char *pdata,unsigned int size,MSGHEAD *phead,SOCKADDR *addrClient,int *len)
-  History:        // 
+  History:        //
 *************************************************/
 #ifndef MESSAGE_H
 #define MESSAGE_H
@@ -49,6 +49,7 @@
 #define MSG_TEST_LOAD 0x0005
 #define MSG_TEST_COMMIT 0x0006
 #define MSG_KEY_NEGOTIALTE 0x0007			//密钥协商
+#define MSG_REQCERT 0x0008					//请求证书
 
 #define MAX_SLICEITEM_SLEEP		120			//重组分组等待最多数据报，如果等待了120个报文，还没有成功重组，则从链表中删除
 
@@ -61,7 +62,7 @@
 typedef struct
 {
 	WORD  id;				//自增型消息ID
-} MID; 
+} MID;
 
 typedef struct {
 	WORD m_no;					//消息分片编号，从0开始编号，用于消息分片的组装
@@ -81,8 +82,8 @@ struct sliceitem
 {
 	int num_item_wait;//计数器，用于计算item在链表中最长停留等待数据报个数，最大值为MAX_SLICEITEM_SLEEP
 	MSGHEAD msghead;//消息头部
-	char *data;//消息数据指针
-	struct sliceitem *next;
+	char* data;//消息数据指针
+	struct sliceitem* next;
 };
 
 typedef struct sliceitem SLICEITEM;
@@ -109,41 +110,41 @@ class Cmessage {
 	static bool is_initialized;
 	WORD sndseqs[SND_BUF_SIZE];//缓存发送的100条消息
 	int cursndseq;//记录当前发送序列号的指针
-	SLICEITEM *precv;//接收队列
+	SLICEITEM* precv;//接收队列
 public:
 	MID m_id;
 	void StartService();
 	void StopService();
 	Cmessage();
 	void setsndseq();//设置发送序列号
-	void appendslice(SLICEITEM *pitem);//对接收到的分片加入接收队列
-	int get_whole_data(MSGHEAD *phead,char **pdata,int *rtn_data_len);
+	void appendslice(SLICEITEM* pitem);//对接收到的分片加入接收队列
+	int get_whole_data(MSGHEAD* phead, char** pdata, int* rtn_data_len);
 	void init_id();
 	void setnextid();
 	bool check_valid();
-	int (*pproc)(void *pobj,MSGHEAD *phead,char *pdata,char **presdata);								//定义消息处理函数的函数指针
+	int (*pproc)(void* pobj, MSGHEAD* phead, char* pdata, char** presdata);								//定义消息处理函数的函数指针
 	bool check_initsock(); //true initialized false otherwise
 	bool init_socket();
-	int send(char *pbuf,MSGHEAD *phead,SOCKADDR *dst_addr,int m_type);			//以SSL UDP加密方式传递buffer内容，返回成功或失败，实现消息窗口管理
-	int recv(char **pdata,MSGHEAD *phead,SOCKADDR *addrClient);			//阻塞方式接收数据，超时时间2s，返回接收到的消息长度，为0标明接收失败，否则返回消息长度及指向消息头部的指针。及实现消息窗口管理
+	int send(char* pbuf, MSGHEAD* phead, SOCKADDR* dst_addr, int m_type);			//以SSL UDP加密方式传递buffer内容，返回成功或失败，实现消息窗口管理
+	int recv(char** pdata, MSGHEAD* phead, SOCKADDR* addrClient);			//阻塞方式接收数据，超时时间2s，返回接收到的消息长度，为0标明接收失败，否则返回消息长度及指向消息头部的指针。及实现消息窗口管理
 };
 
-class Config : public Cmessage{
-	void *m_pobj;//指向回调函数引用对象指针
+class Config : public Cmessage {
+	void* m_pobj;//指向回调函数引用对象指针
 	MSGHEADSAVED msg_saved;
-friend DWORD WINAPI recvmsg(Config *pcfg);
+	friend DWORD WINAPI recvmsg(Config* pcfg);
 public:
 	Config();
-	Config(void *pobj,int (*pproc_cmd)(void *pobj,MSGHEAD *phead,char *pdata,char **presdata));
+	Config(void* pobj, int (*pproc_cmd)(void* pobj, MSGHEAD* phead, char* pdata, char** presdata));
 	~Config();
 	void SetEndflg(bool flg);
 	bool GetEndflg();
-	int (*pproc)(void *pobj,MSGHEAD *phead,char *pdata,char **presdata);								//定义消息处理函数的函数指针
-	void setproc(void *pobj,int (*pproc_cmd)(void *pobj,MSGHEAD *phead,char *pdata,char **presdata));		//设置消息处理函数指针
-	bool sendcmd(MSGHEAD *phead,char *psnddata,SOCKADDR *dst_addr);
-	bool recvcmd(SOCKADDR *dst_addr);
+	int (*pproc)(void* pobj, MSGHEAD* phead, char* pdata, char** presdata);								//定义消息处理函数的函数指针
+	void setproc(void* pobj, int (*pproc_cmd)(void* pobj, MSGHEAD* phead, char* pdata, char** presdata));		//设置消息处理函数指针
+	bool sendcmd(MSGHEAD* phead, char* psnddata, SOCKADDR* dst_addr);
+	bool recvcmd(SOCKADDR* dst_addr);
 };
-extern void del_buf(char **p);
+extern void del_buf(char** p);
 extern Config cfg;
-extern DWORD WINAPI recvmsg(Config *pcfg);
+extern DWORD WINAPI recvmsg(Config* pcfg);
 #endif

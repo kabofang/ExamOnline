@@ -34,12 +34,13 @@ int main() {
 		sha1_write(&ctx, (unsigned char*)&Cert, 3*DATALEN + KEYLEN + HASHLEN + sizeof(int));
 		sha1_final(&ctx);
 		Cert.SetHashValue((char*)(ctx.buf));
+		Cert.Serialize("certplain");
 		CRsa* pRsa = new CRsa;
 		pRsa->Init(PRI_KEY_FILE);
 		char* pciphtertext;
-		pRsa->Encrypt(sizeof(Cert), (char*)&Cert, &pciphtertext);
+		int ret = pRsa->Encrypt(sizeof(Cert), (char*)&Cert, &pciphtertext);
 		fp = fopen(SERVER_CERT_FILE,"wb");
-		fwrite(pciphtertext, sizeof(Cert), 1, fp);
+		fwrite(pciphtertext, ret, 1, fp);
 		fclose(fp);
 		rename(CERT_FILE, CERT_FILE_OK);
 	}
