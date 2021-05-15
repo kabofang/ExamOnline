@@ -8,7 +8,6 @@
 #include "CDes.h"
 #include "tempvar.h"
 #include "CCert.h"
-#define KEY_FILE "prikey.pem"
 
 
 extern DWORD WINAPI msgdispatcher();

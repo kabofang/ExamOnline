@@ -16,7 +16,6 @@ extern "C"
 #include "CDes.h"
 #include "CSecure.h"
 #include "tempvar.h"
-#define KEY_FILE "pubkey.pem"
 
 
 #ifdef _DEBUG

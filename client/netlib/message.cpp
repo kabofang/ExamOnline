@@ -772,7 +772,7 @@ int Config::recvcmd(SOCKADDR *dst_addr)
 	}
 
 
-	memset(&res_head,0,sizeof(res_head));
+	memset(&res_head,0,sizeof(res_head));	
 
 	m_pobj = (void *)dst_addr;//存储目标地址，以便在线程中发送到目标主机
 
